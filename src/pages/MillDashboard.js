@@ -82,13 +82,12 @@ export default function MillDashboard() {
             </div>
           </div>
 
-          {/* Andritz label */}
-          <div style={{
-            fontFamily: 'var(--font-display)', fontSize: 11,
-            color: 'var(--andritz-blue)', letterSpacing: 4, opacity: 0.7
-          }}>
-            ANDRITZ
-          </div>
+          {/* ANDRITZ Official Logo */}
+          <img
+            src="/andritz-logo.svg"
+            alt="ANDRITZ"
+            style={{ height: 20, opacity: 0.9 }}
+          />
         </div>
 
         {/* Tab bar */}

@@ -97,33 +97,17 @@ export default function MillSelector() {
         transform: mounted ? 'translateY(0)' : 'translateY(-30px)',
         transition: 'all 0.8s cubic-bezier(0.4,0,0.2,1)'
       }}>
-        {/* Rotating rings */}
-        <div style={{ position: 'relative', width: 160, height: 160, margin: '0 auto 32px' }}>
-          <HexRing color="#00c8ff" size={160} delay={0} />
-          <HexRing color="#ff6b35" size={120} delay={2} />
-          <HexRing color="#00ff88" size={80} delay={4} />
-          <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <div style={{
-              width: 60, height: 60,
-              background: 'linear-gradient(135deg, var(--andritz-blue), #cc4400)',
-              clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 30px rgba(255,107,53,0.6)'
-            }}>
-              <span style={{ fontSize: 20, filter: 'brightness(0) invert(1)' }}>⚙</span>
-            </div>
-          </div>
-        </div>
-
-        <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: 11,
-          letterSpacing: 6, color: 'var(--andritz-blue)',
-          marginBottom: 8, opacity: 0.7
-        }}>
-          ANDRITZ GROUP
+        {/* ANDRITZ Official Logo */}
+        <div style={{ marginBottom: 40, display: 'flex', justifyContent: 'center' }}>
+          <img
+            src="/andritz-logo.svg"
+            alt="ANDRITZ"
+            style={{
+              width: 240,
+              filter: 'brightness(0) invert(1)',
+              opacity: 0.95
+            }}
+          />
         </div>
         <h1 className="glow-text" style={{
           fontFamily: 'var(--font-display)',
