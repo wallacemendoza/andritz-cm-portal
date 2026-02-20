@@ -4,19 +4,6 @@ import { MILLS } from '../data/mills';
 
 const mills = Object.values(MILLS);
 
-function HexRing({ color, size = 120, delay = 0 }) {
-  return (
-    <div style={{
-      position: 'absolute',
-      width: size, height: size,
-      border: `1px solid ${color}`,
-      borderRadius: '50%',
-      opacity: 0.15,
-      animation: `spin-slow ${8 + delay}s linear infinite`,
-      animationDelay: `${delay}s`
-    }} />
-  );
-}
 
 function ParticleField() {
   const particles = Array.from({ length: 50 }, (_, i) => ({
