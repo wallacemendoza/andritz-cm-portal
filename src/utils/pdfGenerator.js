@@ -1,553 +1,487 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-// ─── Brand Colors ─────────────────────────────────────────────────────────────
+// ─── Colors ─────────────────────────────────────────────────────────────────
 const BLUE       = [0, 117, 190];
 const DARK_BLUE  = [0, 58, 112];
 const RED        = [228, 0, 43];
 const WHITE      = [255, 255, 255];
-const DARK_TEXT  = [40, 50, 65];
-const BODY_TEXT  = [70, 85, 105];
-const MUTED      = [130, 150, 170];
+const DARK_TEXT  = [33, 43, 54];
+const BODY_TEXT  = [66, 82, 100];
+const MUTED      = [130, 148, 166];
+const PAGE_BG    = [218, 232, 242];
+const CARD_BG    = [238, 246, 252];
+const ROW_BG     = [232, 243, 251];
+const BORDER     = [183, 202, 216];
+const BORDER_LT  = [208, 222, 232];
+const GREEN_DARK = [46, 125, 50];
+const GREEN_MED  = [76, 175, 80];
 
-const PAGE_BG    = [221, 234, 243];   // light steel-blue page bg
-const CARD_BG    = [240, 246, 251];   // section card bg
-const ROW_BG     = [235, 244, 251];   // normal row bg
-const BORDER_CLR = [187, 204, 216];   // border gray-blue
-const BORDER_L   = [210, 225, 235];   // lighter border
-
-// Status condition colors
-const STATUS_COLORS = {
-  acceptable: { bg: [232, 245, 233], border: [76, 175, 80],  text: DARK_TEXT },
-  caution:    { bg: [255, 248, 225], border: [255, 193, 7],   text: DARK_TEXT },
-  alert:      { bg: [253, 236, 234], border: [229, 57, 53],   text: DARK_TEXT }
+const STATUS = {
+  acceptable: { bg: [232, 245, 233], border: [76, 175, 80] },
+  caution:    { bg: [255, 248, 225], border: [255, 193, 7]  },
+  alert:      { bg: [253, 236, 234], border: [229, 57, 53]  },
 };
 
-const PAGE_W  = 210;
-const PAGE_H  = 297;
-const MARGIN  = 11;
-const SIDE_W  = 20;   // rotated label column
-const CARD_X  = MARGIN + SIDE_W + 4;
-const CARD_W  = PAGE_W - CARD_X - MARGIN;
+// ─── Page geometry ───────────────────────────────────────────────────────────
+const PW   = 210;
+const PH   = 297;
+const ML   = 8;
+const MR   = 8;
+const SW   = 18;
+const CX   = ML + SW + 3;
+const CW   = PW - CX - MR;
+const GAP  = 2.5;
+const RH   = 12;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function pageSetup(doc) {
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function bg(doc) {
   doc.setFillColor(...PAGE_BG);
-  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+  doc.rect(0, 0, PW, PH, 'F');
 }
 
-function setF(doc, size, style = 'normal', color = DARK_TEXT) {
-  doc.setFont('helvetica', style);
+function tf(doc, size, style, color) {
+  doc.setFont('helvetica', style || 'normal');
   doc.setFontSize(size);
-  doc.setTextColor(...color);
+  doc.setTextColor(...(color || DARK_TEXT));
 }
 
-function rrect(doc, x, y, w, h, r, bg, stroke) {
-  if (bg)     { doc.setFillColor(...bg); }
-  if (stroke) { doc.setDrawColor(...stroke); doc.setLineWidth(0.5); }
-  else        { doc.setDrawColor(255,255,255); doc.setLineWidth(0); }
-
-  // jsPDF has roundedRect
-  if (bg && stroke) doc.roundedRect(x, y, w, h, r, r, 'FD');
-  else if (bg)      doc.roundedRect(x, y, w, h, r, r, 'F');
-  else              doc.roundedRect(x, y, w, h, r, r, 'D');
+function rr(doc, x, y, w, h, r, fill, stroke, lw) {
+  doc.setLineWidth(lw || 0.45);
+  if (fill)   doc.setFillColor(...fill);
+  if (stroke) doc.setDrawColor(...stroke);
+  else        doc.setDrawColor(255, 255, 255);
+  const mode = fill && stroke ? 'FD' : fill ? 'F' : 'D';
+  doc.roundedRect(x, y, w, h, r, r, mode);
 }
 
-function redDot(doc, x, y, r = 1.8) {
+function dot(doc, x, y) {
   doc.setFillColor(...RED);
-  doc.circle(x, y, r, 'F');
+  doc.circle(x, y, 1.9, 'F');
 }
 
-function fieldRow(doc, label, value, x, y, w, h, bg, valueFontStyle, valueColor) {
-  rrect(doc, x, y, w, h, 4, bg || ROW_BG, BORDER_L);
-  redDot(doc, x + 6, y + h / 2 - 0.3);
-  setF(doc, 9.5, 'bold', DARK_TEXT);
-  doc.text(label + ':', x + 11, y + h / 2 + 1.2);
+function row(doc, label, value, x, y, w, h, rowBg, valColor) {
+  rr(doc, x, y, w, h, 4, rowBg || ROW_BG, BORDER_LT, 0.4);
+  dot(doc, x + 7, y + h / 2);
+  tf(doc, 9.5, 'bold', DARK_TEXT);
+  doc.text(label + ':', x + 12, y + h / 2 + 1.3);
   const lw = doc.getTextWidth(label + ': ');
-  setF(doc, 9.5, valueFontStyle || 'bold', valueColor || BLUE);
-  doc.text(String(value || '—'), x + 11 + lw, y + h / 2 + 1.2);
+  tf(doc, 9.5, 'bold', valColor || BLUE);
+  doc.text(String(value || '\u2014'), x + 12 + lw, y + h / 2 + 1.3);
 }
 
-function sideLabel(doc, text, x, y, h) {
-  doc.setFillColor(...[91, 135, 176]);
-  doc.setFont('helvetica', 'boldoblique');
-  doc.setFontSize(8.5);
-  doc.setTextColor(91, 135, 176);
+function card(doc, y, h) {
+  rr(doc, ML, y, PW - ML - MR, h, 7, CARD_BG, BORDER, 0.5);
+}
+
+function sideLabel(doc, text, cardY, cardH) {
+  tf(doc, 8, 'boldoblique', [85, 128, 170]);
   doc.saveGraphicsState();
-  doc.text(text, x + 5, y + h / 2, { angle: 90, align: 'center' });
+  doc.text(text, ML + SW / 2, cardY + cardH / 2, { angle: 90, align: 'center' });
   doc.restoreGraphicsState();
 }
 
-function sectionCard(doc, y, h) {
-  rrect(doc, MARGIN, y, PAGE_W - MARGIN * 2, h, 8, CARD_BG, BORDER_CLR);
-}
-
-function chartPlaceholder(doc, x, y, w, h, label, value, imageData) {
-  rrect(doc, x, y, w, h, 6, WHITE, BORDER_CLR);
-  // header row inside
-  rrect(doc, x + 2, y + 2, w - 4, 10, 3, ROW_BG, null);
-  redDot(doc, x + 8, y + 7.5);
-  setF(doc, 8.5, 'bold', DARK_TEXT);
-  doc.text(label + ':', x + 13, y + 8.5);
-  const lw = doc.getTextWidth(label + ': ');
-  setF(doc, 8.5, 'bold', BLUE);
-  doc.text(value || '', x + 13 + lw, y + 8.5);
-  // content area
-  const cx = x + 3, cy = y + 14, cw = w - 6, ch = h - 17;
-  if (imageData) {
+function imgBox(doc, x, y, w, h, headerLabel, headerBold, imgData) {
+  rr(doc, x, y, w, h, 6, WHITE, BORDER, 0.5);
+  rr(doc, x + 2, y + 2, w - 4, 11, 3, ROW_BG, null, 0);
+  dot(doc, x + 8, y + 7.8);
+  tf(doc, 9, 'normal', DARK_TEXT);
+  doc.text(headerLabel + ' ', x + 13, y + 9);
+  const lw2 = doc.getTextWidth(headerLabel + ' ');
+  tf(doc, 9, 'bold', BLUE);
+  doc.text(headerBold, x + 13 + lw2, y + 9);
+  const ix = x + 3, iy = y + 15, iw = w - 6, ih = h - 18;
+  if (imgData) {
     try {
-      doc.addImage(imageData, 'JPEG', cx, cy, cw, ch);
-    } catch {
-      rrect(doc, cx, cy, cw, ch, 3, [245, 248, 252], BORDER_L);
-      setF(doc, 7.5, 'normal', MUTED);
-      doc.text('Image could not be loaded', cx + cw / 2, cy + ch / 2, { align: 'center' });
+      const fmt = imgData.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+      doc.addImage(imgData, fmt, ix, iy, iw, ih);
+    } catch (_) {
+      rr(doc, ix, iy, iw, ih, 3, [240, 245, 250], BORDER_LT, 0.3);
     }
   } else {
-    rrect(doc, cx, cy, cw, ch, 3, [245, 248, 252], BORDER_L);
-    // empty - no placeholder text as per user request
+    rr(doc, ix, iy, iw, ih, 3, [240, 245, 250], BORDER_LT, 0.3);
   }
 }
 
-function machineImageBox(doc, x, y, w, h, imageData) {
-  rrect(doc, x, y, w, h, 6, WHITE, BORDER_CLR);
-  rrect(doc, x + 2, y + 2, w - 4, 10, 3, ROW_BG, null);
-  redDot(doc, x + 8, y + 7.5);
-  setF(doc, 8.5, 'normal', DARK_TEXT);
-  doc.text('Machine ', x + 13, y + 8.5);
-  const tw = doc.getTextWidth('Machine ');
-  setF(doc, 8.5, 'bold', BLUE);
-  doc.text('Image', x + 13 + tw, y + 8.5);
-  const cx = x + 3, cy = y + 14, cw = w - 6, ch = h - 17;
-  if (imageData) {
-    try {
-      doc.addImage(imageData, 'JPEG', cx, cy, cw, ch);
-    } catch {
-      rrect(doc, cx, cy, cw, ch, 3, [235, 240, 245], BORDER_L);
-      setF(doc, 7.5, 'normal', MUTED);
-      doc.text('Image error', cx + cw/2, cy + ch/2, { align: 'center' });
-    }
-  } else {
-    rrect(doc, cx, cy, cw, ch, 3, [235, 240, 245], BORDER_L);
-  }
-}
-
-function descriptionBox(doc, x, y, w, h, text) {
-  rrect(doc, x, y, w, h, 6, [240, 246, 251], BORDER_CLR);
-  rrect(doc, x + 2, y + 2, w - 4, 10, 3, ROW_BG, null);
-  redDot(doc, x + 8, y + 7.5);
-  setF(doc, 9, 'bold', BLUE);
-  doc.text('Description', x + 13, y + 8.5);
-  setF(doc, 8.5, 'normal', BODY_TEXT);
-  const lines = doc.splitTextToSize(text || '', w - 10);
-  doc.text(lines.slice(0, Math.floor((h - 18) / 6.5)), x + 6, y + 17);
-}
-
-function footer(doc, formId) {
-  const y = PAGE_H - 8;
-  setF(doc, 7, 'normal', MUTED);
-  doc.setDrawColor(...BORDER_CLR);
-  doc.setLineWidth(0.3);
-  doc.line(MARGIN, PAGE_H - 12, PAGE_W - MARGIN, PAGE_H - 12);
-  doc.text(`ANDRITZ Condition Monitoring System  ·  ${formId}  ·  ${new Date().toLocaleDateString()}`, MARGIN, y);
-  setF(doc, 7, 'bold', MUTED);
-  doc.text('CONFIDENTIAL', PAGE_W - MARGIN, y, { align: 'right' });
-}
-
-// ─── HEADER ───────────────────────────────────────────────────────────────────
 function drawHeader(doc, title, subtitle, millName) {
   doc.setFillColor(...WHITE);
-  doc.rect(0, PAGE_H - PAGE_H, PAGE_W, 38, 'F');
-
-  // Left logo block with rounded rect
-  rrect(doc, MARGIN, 4, 55, 30, 5, WHITE, BORDER_CLR);
-
-  // ANDRITZ bold dark blue
-  setF(doc, 14, 'bold', DARK_BLUE);
-  doc.text('ANDRiTZ', MARGIN + 3, 16);
-
-  // Green leaf dots
-  doc.setFillColor(76, 175, 80);
-  doc.circle(MARGIN + 3, 24, 3.5, 'F');
-  doc.setFillColor(46, 125, 50);
-  doc.circle(MARGIN + 9, 27, 3, 'F');
-
-  // Mill name / CLEARWATER PAPER
-  setF(doc, 6.5, 'bold', DARK_TEXT);
-  const mLines = doc.splitTextToSize(millName.toUpperCase(), 38);
-  doc.text(mLines.slice(0,2), MARGIN + 15, 23);
-
-  // Vertical divider
-  doc.setDrawColor(...BORDER_CLR);
-  doc.setLineWidth(0.8);
-  doc.line(MARGIN + 58, 5, MARGIN + 58, 35);
-
-  // Title + subtitle
-  setF(doc, 18, 'bold', DARK_BLUE);
-  doc.text(title, MARGIN + 63, 17);
-  setF(doc, 11, 'bold', BLUE);
-  doc.text(subtitle, MARGIN + 63, 27);
-
-  // Bottom border of header
-  doc.setDrawColor(...BORDER_CLR);
+  doc.rect(0, 0, PW, 42, 'F');
+  doc.setDrawColor(...BORDER);
   doc.setLineWidth(0.5);
-  doc.line(0, 40, PAGE_W, 40);
+  doc.line(0, 42, PW, 42);
+
+  // Logo box
+  rr(doc, ML, 4, 58, 34, 5, WHITE, BORDER, 0.6);
+  tf(doc, 17, 'bold', DARK_BLUE);
+  doc.text('ANDRiTZ', ML + 5, 16);
+  doc.setFillColor(...GREEN_MED);
+  doc.circle(ML + 6, 24, 4, 'F');
+  doc.setFillColor(...GREEN_DARK);
+  doc.circle(ML + 12, 27, 3.2, 'F');
+  tf(doc, 7.5, 'bold', DARK_TEXT);
+  // Use mill name if short enough, otherwise use generic
+  const displayName = millName && millName.length < 20 ? millName.toUpperCase() : 'CLEARWATER PAPER';
+  const mLines = doc.splitTextToSize(displayName, 38);
+  doc.text(mLines[0] || 'CLEARWATER', ML + 19, 23);
+  doc.text(mLines[1] || 'PAPER', ML + 19, 30);
+
+  // Divider
+  doc.setDrawColor(...BORDER);
+  doc.setLineWidth(0.7);
+  doc.line(ML + 62, 5, ML + 62, 38);
+
+  // Title
+  tf(doc, 20, 'bold', DARK_BLUE);
+  doc.text(title, ML + 67, 18);
+  tf(doc, 12, 'bold', BLUE);
+  doc.text(subtitle, ML + 67, 30);
+}
+
+function drawFooter(doc, formId) {
+  doc.setDrawColor(...BORDER_LT);
+  doc.setLineWidth(0.3);
+  doc.line(ML, PH - 12, PW - MR, PH - 12);
+  tf(doc, 6.5, 'normal', MUTED);
+  doc.text('ANDRITZ Condition Monitoring System  \u00b7  ' + formId + '  \u00b7  ' + new Date().toLocaleDateString(), ML, PH - 7);
+  tf(doc, 6.5, 'bold', MUTED);
+  doc.text('CONFIDENTIAL', PW - MR, PH - 7, { align: 'right' });
 }
 
 // ─── CONDITION MONITORING REPORT ─────────────────────────────────────────────
 export function generateConditionMonitorPDF(data, millName) {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const formId = `CMR-${String(Math.floor(Math.random()*999)).padStart(3,'0')}-${new Date().getFullYear()}`;
-  pageSetup(doc);
+  const doc  = new jsPDF({ unit: 'mm', format: 'a4' });
+  const num  = String(Math.floor(Math.random() * 999)).padStart(3, '0');
+  const yr   = new Date().getFullYear();
+  const formId     = 'CMR-' + num + '-' + yr;
+  const cmrDisplay = num + '-' + yr;   // no "CMR-" prefix in the field value
+
+  bg(doc);
   drawHeader(doc, 'Condition Monitoring Report', 'Vibration Diagnosis and Recommendation', millName);
 
-  const statusKey = (data.statusCondition || 'alert').toLowerCase();
-  const sc = STATUS_COLORS[statusKey] || STATUS_COLORS.alert;
+  const sc    = STATUS[(data.statusCondition || 'alert').toLowerCase()] || STATUS.alert;
+  const riskL = data.risk === 'low' ? 'Low Risk' : data.risk === 'medium' ? 'Medium Risk' : 'High Risk';
 
-  let y = 43;
+  let y = 45;
 
-  // ── GENERAL INFORMATION SECTION ──────────────────────────────────
-  const ROW_H = 11;
-  const GAP   = 2.5;
-  const HALF  = (CARD_W - GAP) / 2;
-  const GEN_H = ROW_H * 4 + GAP * 5 + 8;
+  // General Information
+  const GEN_H = RH * 4 + GAP * 5 + 6;
+  card(doc, y, GEN_H);
+  sideLabel(doc, 'General Information', y, GEN_H);
 
-  sectionCard(doc, y, GEN_H);
-  sideLabel(doc, 'General Information', MARGIN, y, GEN_H);
+  const HALF  = (CW - GAP) / 2;
+  const THIRD = (CW - GAP * 2) / 3;
+  let ry = y + GAP;
 
-  let ry = y + 4;
+  row(doc, 'Location', data.area || '\u2014', CX, ry, CW, RH, ROW_BG, BLUE);
+  ry += RH + GAP;
 
-  // Row 1: Location (full width)
-  fieldRow(doc, 'Location', data.area || '—', CARD_X, ry, CARD_W, ROW_H, ROW_BG, 'bold', BLUE);
-  ry += ROW_H + GAP;
+  row(doc, 'Asset & ID',
+    (data.assetName || '\u2014') + (data.assetId ? '  \u2014  ' + data.assetId : ''),
+    CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Status Condition',
+    (data.statusCondition || 'Alert').charAt(0).toUpperCase() + (data.statusCondition || 'alert').slice(1),
+    CX + HALF + GAP, ry, HALF, RH, sc.bg, BLUE);
+  ry += RH + GAP;
 
-  // Row 2: Asset & ID (left) | Status Condition (right, colored bg)
-  fieldRow(doc, 'Asset & ID', (data.assetName || '—') + (data.assetId ? '  —  ' + data.assetId : ''), CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Status Condition', (data.statusCondition ? data.statusCondition.charAt(0).toUpperCase() + data.statusCondition.slice(1) : 'Alert'), CARD_X + HALF + GAP, ry, HALF, ROW_H, sc.bg, 'bold', BLUE);
-  ry += ROW_H + GAP;
+  row(doc, 'Vibration Diagnosis', data.diagnosis || '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Temperature', data.temperature ? data.temperature + ' \u00b0F' : '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, BLUE);
+  ry += RH + GAP;
 
-  // Row 3: Vibration Diagnosis (left) | Temperature (right, white bg — not colored)
-  fieldRow(doc, 'Vibration Diagnosis', data.diagnosis || '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Temperature', data.temperature ? data.temperature + ' °F' : '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  ry += ROW_H + GAP;
+  row(doc, 'Risk', riskL, CX, ry, THIRD, RH, ROW_BG, BLUE);
+  row(doc, 'CMR', cmrDisplay, CX + THIRD + GAP, ry, THIRD, RH, ROW_BG, DARK_BLUE);
+  row(doc, 'Vibration Level',
+    data.vibrationLevel ? data.vibrationLevel + ' G' : (data.geLevel || '\u2014'),
+    CX + THIRD * 2 + GAP * 2, ry, THIRD, RH, sc.bg, BLUE);
 
-  // Row 4: Risk (left) | CMR (center) | Vibration Level (right, same bg as status)
-  const THIRD = (CARD_W - GAP * 2) / 3;
-  const riskLabel = data.risk === 'low' ? 'Low Risk' : data.risk === 'medium' ? 'Medium Risk' : 'High Risk';
-  fieldRow(doc, 'Risk', riskLabel, CARD_X, ry, THIRD, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'CMR', formId, CARD_X + THIRD + GAP, ry, THIRD, ROW_H, ROW_BG, 'bold', DARK_BLUE);
-  fieldRow(doc, 'Vibration Level', data.vibrationLevel ? data.vibrationLevel + ' G' : (data.geLevel || '—'), CARD_X + THIRD * 2 + GAP * 2, ry, THIRD, ROW_H, sc.bg, 'bold', BLUE);
+  y += GEN_H + 4;
 
-  y += GEN_H + 5;
+  // Vibration Diagnosis section
+  const recLines = (data.recommendation || '').split('\n').filter(function(r) { return r.trim(); });
+  const REC_H    = Math.max(28, recLines.length * 8 + 18);
+  const CHART_H  = 55;
+  const IMGROW_H = 62;
+  const FOOT_H   = 14;
+  const VIB_H    = CHART_H + GAP + IMGROW_H + GAP + REC_H + GAP + FOOT_H + GAP * 3 + 4;
 
-  // ── VIBRATION DIAGNOSIS SECTION ──────────────────────────────────
-  const CHART_H = 52;
-  const IMG_H   = 60;
-  const REC_H   = Math.max(30, (data.recommendation || '').split('\n').length * 7 + 16);
-  const FOOT_H  = 14;
-  const VIB_H   = CHART_H + IMG_H + REC_H + FOOT_H + 28;
+  card(doc, y, VIB_H);
+  sideLabel(doc, 'Vibration Diagnosis and Recommendation', y, VIB_H);
 
-  sectionCard(doc, y, VIB_H);
-  sideLabel(doc, 'Vibration Diagnosis and Recommendation', MARGIN, y, VIB_H);
+  const HCW = (CW - GAP) / 2;
+  let vy = y + GAP;
 
-  const HALF_CW = (CARD_W - GAP) / 2;
-  let vy = y + 4;
+  imgBox(doc, CX, vy, HCW, CHART_H, 'Trend:', data.diagnosis || '', data.trendImage);
+  imgBox(doc, CX + HCW + GAP, vy, HCW, CHART_H, 'Spectrum:', 'Frequency Spectrum', data.spectrumImage);
+  vy += CHART_H + GAP;
 
-  // Charts row
-  chartPlaceholder(doc, CARD_X, vy, HALF_CW, CHART_H, 'Trend', data.diagnosis || 'Trend Analysis', data.trendImage);
-  chartPlaceholder(doc, CARD_X + HALF_CW + GAP, vy, HALF_CW, CHART_H, 'Spectrum', 'Frequency Spectrum', data.spectrumImage);
-  vy += CHART_H + 4;
+  imgBox(doc, CX, vy, HCW, IMGROW_H, 'Machine', 'Image', data.machineImage);
 
-  // Image + Description row
-  machineImageBox(doc, CARD_X, vy, HALF_CW, IMG_H, data.machineImage);
-  descriptionBox(doc, CARD_X + HALF_CW + GAP, vy, HALF_CW, IMG_H, data.observations);
-  vy += IMG_H + 5;
+  // Description box
+  rr(doc, CX + HCW + GAP, vy, HCW, IMGROW_H, 6, CARD_BG, BORDER, 0.5);
+  rr(doc, CX + HCW + GAP + 2, vy + 2, HCW - 4, 11, 3, ROW_BG, null, 0);
+  dot(doc, CX + HCW + GAP + 8, vy + 8);
+  tf(doc, 9.5, 'bold', BLUE);
+  doc.text('Description', CX + HCW + GAP + 13, vy + 9.2);
+  tf(doc, 8, 'normal', BODY_TEXT);
+  const descLines = doc.splitTextToSize(data.observations || '', HCW - 10);
+  descLines.slice(0, 7).forEach(function(l, i) {
+    doc.text(l, CX + HCW + GAP + 6, vy + 18 + i * 6.2);
+  });
+  vy += IMGROW_H + GAP;
 
   // Recommendation
-  rrect(doc, CARD_X, vy, CARD_W, REC_H, 5, WHITE, BORDER_CLR);
-  redDot(doc, CARD_X + 6, vy + 7.5);
-  setF(doc, 9.5, 'bold', BLUE);
-  doc.text('Recommendation', CARD_X + 11, vy + 8.5);
-
-  setF(doc, 8.5, 'normal', BODY_TEXT);
-  const recs = (data.recommendation || '').split('\n').filter(r => r.trim());
-  let rly = vy + 16;
-  recs.slice(0, 6).forEach(line => {
-    const wrapped = doc.splitTextToSize(line, CARD_W - 18);
-    doc.setFillColor(...[120, 130, 145]);
-    doc.circle(CARD_X + 8, rly + 1, 1.3, 'F');
-    setF(doc, 8.5, 'normal', BODY_TEXT);
-    doc.text(wrapped[0] || '', CARD_X + 12, rly + 1.5);
-    if (wrapped[1]) doc.text(wrapped[1], CARD_X + 12, rly + 7);
-    rly += (wrapped.length > 1 ? 13 : 7.5);
+  rr(doc, CX, vy, CW, REC_H, 5, WHITE, BORDER_LT, 0.4);
+  dot(doc, CX + 7, vy + 9);
+  tf(doc, 10, 'bold', BLUE);
+  doc.text('Recommendation', CX + 12, vy + 10.2);
+  tf(doc, 8.5, 'normal', BODY_TEXT);
+  let rly = vy + 19;
+  recLines.slice(0, 7).forEach(function(line) {
+    const wrapped = doc.splitTextToSize(line.replace(/^[-\u2022]\s*/, ''), CW - 18);
+    doc.setFillColor(100, 115, 130);
+    doc.circle(CX + 8, rly, 1.5, 'F');
+    wrapped.forEach(function(wl, wi) { doc.text(wl, CX + 13, rly + wi * 6); });
+    rly += wrapped.length * 6 + 2;
   });
-  vy += REC_H + 5;
+  vy += REC_H + GAP;
 
-  // Footer row inside card — two cells
-  const FOOT_HALF = (CARD_W - GAP) / 2;
-  rrect(doc, CARD_X, vy, FOOT_HALF, FOOT_H, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + 6, vy + FOOT_H / 2 - 0.3);
-  setF(doc, 9, 'bold', DARK_TEXT);
-  doc.text('Emitted by ', CARD_X + 11, vy + FOOT_H / 2 + 1.2);
-  setF(doc, 9, 'bold', BLUE);
-  doc.text(data.technicianName || '________________', CARD_X + 11 + doc.getTextWidth('Emitted by '), vy + FOOT_H / 2 + 1.2);
+  // Footer row
+  const FH2 = (CW - GAP) / 2;
+  rr(doc, CX, vy, FH2, FOOT_H, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + 7, vy + FOOT_H / 2);
+  tf(doc, 9.5, 'bold', DARK_TEXT);
+  doc.text('Emitted by ', CX + 12, vy + FOOT_H / 2 + 1.3);
+  tf(doc, 9.5, 'bold', BLUE);
+  doc.text(data.technicianName || '________________', CX + 12 + doc.getTextWidth('Emitted by '), vy + FOOT_H / 2 + 1.3);
 
-  rrect(doc, CARD_X + FOOT_HALF + GAP, vy, FOOT_HALF, FOOT_H, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + FOOT_HALF + GAP + 6, vy + FOOT_H / 2 - 0.3);
-  setF(doc, 9, 'bold', DARK_TEXT);
-  doc.text('Note Date ', CARD_X + FOOT_HALF + GAP + 11, vy + FOOT_H / 2 + 1.2);
-  setF(doc, 9, 'bold', BLUE);
-  doc.text(data.date || new Date().toLocaleDateString(), CARD_X + FOOT_HALF + GAP + 11 + doc.getTextWidth('Note Date '), vy + FOOT_H / 2 + 1.2);
+  rr(doc, CX + FH2 + GAP, vy, FH2, FOOT_H, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + FH2 + GAP + 7, vy + FOOT_H / 2);
+  tf(doc, 9.5, 'bold', DARK_TEXT);
+  doc.text('Note Date ', CX + FH2 + GAP + 12, vy + FOOT_H / 2 + 1.3);
+  tf(doc, 9.5, 'bold', BLUE);
+  doc.text(data.date || new Date().toLocaleDateString(), CX + FH2 + GAP + 12 + doc.getTextWidth('Note Date '), vy + FOOT_H / 2 + 1.3);
 
-  footer(doc, formId);
-  doc.save(`${formId}_Condition_Monitor.pdf`);
+  drawFooter(doc, formId);
+  doc.save(formId + '_Condition_Monitor.pdf');
   return formId;
 }
 
 // ─── POST MAINTENANCE ─────────────────────────────────────────────────────────
 export function generatePostMaintenancePDF(data, millName) {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const formId = `PMF-${String(Math.floor(Math.random()*999)).padStart(3,'0')}-${new Date().getFullYear()}`;
-  pageSetup(doc);
+  const doc    = new jsPDF({ unit: 'mm', format: 'a4' });
+  const num    = String(Math.floor(Math.random() * 999)).padStart(3, '0');
+  const formId = 'PMF-' + num + '-' + new Date().getFullYear();
+  bg(doc);
   drawHeader(doc, 'Post Maintenance Form', 'Maintenance Record & Post-Check Readings', millName);
 
-  const ROW_H = 11, GAP = 2.5;
-  const HALF  = (CARD_W - GAP) / 2;
-  let y = 43;
+  const HALF = (CW - GAP) / 2;
+  let y = 45;
 
-  // General info section
-  const GEN_H = ROW_H * 3 + GAP * 4 + 8;
-  sectionCard(doc, y, GEN_H);
-  sideLabel(doc, 'General Information', MARGIN, y, GEN_H);
-  let ry = y + 4;
-  fieldRow(doc, 'Maintenance Date', data.maintenanceDate || '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Work Order #', data.woNumber || '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', DARK_BLUE);
-  ry += ROW_H + GAP;
-  fieldRow(doc, 'Technician', data.technicianName || '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Asset', (data.assetName || '—') + (data.assetId ? ' / ' + data.assetId : ''), CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  ry += ROW_H + GAP;
-  fieldRow(doc, 'Area / Location', data.area || '—', CARD_X, ry, CARD_W, ROW_H, ROW_BG, 'bold', BLUE);
-  y += GEN_H + 5;
+  const GEN_H = RH * 3 + GAP * 4 + 6;
+  card(doc, y, GEN_H);
+  sideLabel(doc, 'General Information', y, GEN_H);
+  let ry = y + GAP;
+  row(doc, 'Maintenance Date', data.maintenanceDate || '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Work Order #', data.woNumber || '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, DARK_BLUE);
+  ry += RH + GAP;
+  row(doc, 'Technician', data.technicianName || '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Asset', (data.assetName || '\u2014') + (data.assetId ? ' / ' + data.assetId : ''), CX + HALF + GAP, ry, HALF, RH, ROW_BG, BLUE);
+  ry += RH + GAP;
+  row(doc, 'Area / Location', data.area || '\u2014', CX, ry, CW, RH, ROW_BG, BLUE);
+  y += GEN_H + 4;
 
-  // Readings section
-  const READ_H = ROW_H * 2 + GAP * 3 + 8;
-  sectionCard(doc, y, READ_H);
-  sideLabel(doc, 'Pre / Post Readings', MARGIN, y, READ_H);
-  ry = y + 4;
-  fieldRow(doc, 'Vibration Before', data.vibrationBefore ? data.vibrationBefore + ' in/s' : '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Vibration After', data.vibrationAfter ? data.vibrationAfter + ' in/s' : '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  ry += ROW_H + GAP;
-  fieldRow(doc, 'Temperature Before', data.tempBefore ? data.tempBefore + ' °F' : '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Temperature After', data.tempAfter ? data.tempAfter + ' °F' : '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  y += READ_H + 5;
+  const READ_H = RH * 2 + GAP * 3 + 6;
+  card(doc, y, READ_H);
+  sideLabel(doc, 'Pre / Post Readings', y, READ_H);
+  ry = y + GAP;
+  row(doc, 'Vibration Before', data.vibrationBefore ? data.vibrationBefore + ' in/s' : '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Vibration After',  data.vibrationAfter  ? data.vibrationAfter  + ' in/s' : '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, BLUE);
+  ry += RH + GAP;
+  row(doc, 'Temperature Before', data.tempBefore ? data.tempBefore + ' \u00b0F' : '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Temperature After',  data.tempAfter  ? data.tempAfter  + ' \u00b0F' : '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, BLUE);
+  y += READ_H + 4;
 
-  // Details sections
-  const details = [
-    { label: 'Maintenance Performed', key: 'maintenancePerformed', sideText: 'Maintenance Details' },
-    { label: 'Parts / Components Replaced', key: 'partsReplaced', sideText: 'Parts' },
-    { label: 'Notes', key: 'notes', sideText: 'Notes' }
-  ];
-  details.forEach(({ label, key, sideText }) => {
-    const text = data[key] || '—';
-    const lines = doc.splitTextToSize(text, CARD_W - 16);
-    const dh = Math.max(28, lines.length * 6 + 18);
-    sectionCard(doc, y, dh);
-    sideLabel(doc, sideText, MARGIN, y, dh);
-    rrect(doc, CARD_X, y + 3, CARD_W, dh - 6, 5, WHITE, BORDER_L);
-    redDot(doc, CARD_X + 6, y + 10);
-    setF(doc, 9, 'bold', BLUE);
-    doc.text(label, CARD_X + 11, y + 10.5);
-    setF(doc, 8.5, 'normal', BODY_TEXT);
-    lines.slice(0, Math.floor((dh - 20) / 6)).forEach((l, i) => {
-      if (i === 0) doc.circle(CARD_X + 8, y + 18 + i*6.5, 1.3, 'F');
-      doc.text(l, CARD_X + 12, y + 18 + i * 6.5);
+  [
+    { label: 'Maintenance Performed', key: 'maintenancePerformed', side: 'Maintenance' },
+    { label: 'Parts / Components Replaced', key: 'partsReplaced', side: 'Parts' },
+    { label: 'Notes', key: 'notes', side: 'Notes' },
+  ].forEach(function(item) {
+    const lines = doc.splitTextToSize(data[item.key] || '\u2014', CW - 16);
+    const h = Math.max(26, lines.length * 6.5 + 18);
+    card(doc, y, h + 4);
+    sideLabel(doc, item.side, y, h + 4);
+    rr(doc, CX, y + 2, CW, h, 5, WHITE, BORDER_LT, 0.4);
+    dot(doc, CX + 7, y + 10);
+    tf(doc, 9.5, 'bold', BLUE); doc.text(item.label, CX + 12, y + 11);
+    tf(doc, 8.5, 'normal', BODY_TEXT);
+    lines.slice(0, 7).forEach(function(l, i) {
+      doc.setFillColor(110, 125, 140); doc.circle(CX + 8, y + 18 + i * 6.5, 1.3, 'F');
+      doc.text(l, CX + 13, y + 18 + i * 6.5);
     });
-    y += dh + 5;
+    y += h + 8;
   });
 
-  // Footer cells
-  const FOOT_H = 14, FOOT_HALF = (CARD_W - GAP) / 2;
-  rrect(doc, CARD_X, y, FOOT_HALF, FOOT_H, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + 6, y + FOOT_H/2);
-  setF(doc, 9, 'bold', DARK_TEXT); doc.text('Completed by ', CARD_X + 11, y + FOOT_H/2 + 1.2);
-  setF(doc, 9, 'bold', BLUE); doc.text(data.technicianName || '___________', CARD_X + 11 + doc.getTextWidth('Completed by '), y + FOOT_H/2 + 1.2);
-  rrect(doc, CARD_X + FOOT_HALF + GAP, y, FOOT_HALF, FOOT_H, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + FOOT_HALF + GAP + 6, y + FOOT_H/2);
-  setF(doc, 9, 'bold', DARK_TEXT); doc.text('Date ', CARD_X + FOOT_HALF + GAP + 11, y + FOOT_H/2 + 1.2);
-  setF(doc, 9, 'bold', BLUE); doc.text(data.maintenanceDate || '—', CARD_X + FOOT_HALF + GAP + 11 + doc.getTextWidth('Date '), y + FOOT_H/2 + 1.2);
+  const FH2 = (CW - GAP) / 2;
+  rr(doc, CX, y, FH2, 14, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + 7, y + 7); tf(doc, 9.5, 'bold', DARK_TEXT); doc.text('Completed by ', CX + 12, y + 8.3);
+  tf(doc, 9.5, 'bold', BLUE); doc.text(data.technicianName || '___________', CX + 12 + doc.getTextWidth('Completed by '), y + 8.3);
+  rr(doc, CX + FH2 + GAP, y, FH2, 14, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + FH2 + GAP + 7, y + 7); tf(doc, 9.5, 'bold', DARK_TEXT); doc.text('Date ', CX + FH2 + GAP + 12, y + 8.3);
+  tf(doc, 9.5, 'bold', BLUE); doc.text(data.maintenanceDate || '\u2014', CX + FH2 + GAP + 12 + doc.getTextWidth('Date '), y + 8.3);
 
-  footer(doc, formId);
-  doc.save(`${formId}_Post_Maintenance.pdf`);
+  drawFooter(doc, formId);
+  doc.save(formId + '_Post_Maintenance.pdf');
   return formId;
 }
 
 // ─── RCFA ─────────────────────────────────────────────────────────────────────
 export function generateRCFAPDF(data, millName) {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const formId = `RCFA-${String(Math.floor(Math.random()*999)).padStart(3,'0')}-${new Date().getFullYear()}`;
-  pageSetup(doc);
+  const doc    = new jsPDF({ unit: 'mm', format: 'a4' });
+  const num    = String(Math.floor(Math.random() * 999)).padStart(3, '0');
+  const formId = 'RCFA-' + num + '-' + new Date().getFullYear();
+  bg(doc);
   drawHeader(doc, 'Root Cause Failure Analysis', '5-Whys Methodology & Corrective Actions', millName);
 
-  const ROW_H = 11, GAP = 2.5;
-  const HALF = (CARD_W - GAP) / 2;
-  let y = 43;
+  const HALF = (CW - GAP) / 2;
+  let y = 45;
 
-  // General info
-  const GEN_H = ROW_H * 3 + GAP * 4 + 8;
-  sectionCard(doc, y, GEN_H);
-  sideLabel(doc, 'General Information', MARGIN, y, GEN_H);
-  let ry = y + 4;
-  fieldRow(doc, 'Event Date', data.eventDate || '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Work Order #', data.woNumber || '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', DARK_BLUE);
-  ry += ROW_H + GAP;
-  fieldRow(doc, 'Analyst', data.analystName || '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Area', data.area || '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  ry += ROW_H + GAP;
-  fieldRow(doc, 'Failed Component', data.failedComponent || '—', CARD_X, ry, CARD_W, ROW_H, ROW_BG, 'bold', BLUE);
-  y += GEN_H + 5;
+  const GEN_H = RH * 3 + GAP * 4 + 6;
+  card(doc, y, GEN_H);
+  sideLabel(doc, 'General Information', y, GEN_H);
+  let ry = y + GAP;
+  row(doc, 'Event Date', data.eventDate || '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Work Order #', data.woNumber || '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, DARK_BLUE);
+  ry += RH + GAP;
+  row(doc, 'Analyst', data.analystName || '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Area', data.area || '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, BLUE);
+  ry += RH + GAP;
+  row(doc, 'Failed Component', data.failedComponent || '\u2014', CX, ry, CW, RH, ROW_BG, BLUE);
+  y += GEN_H + 4;
 
-  // 5 Whys
-  const WHY_H = ROW_H * 5 + GAP * 6 + 16;
-  sectionCard(doc, y, WHY_H);
-  sideLabel(doc, '5 Whys Analysis', MARGIN, y, WHY_H);
-  ry = y + 4;
-  [data.why1, data.why2, data.why3, data.why4, data.why5].forEach((why, i) => {
-    const bg = i % 2 === 0 ? ROW_BG : WHITE;
-    rrect(doc, CARD_X, ry, CARD_W, ROW_H, 4, bg, BORDER_L);
-    rrect(doc, CARD_X, ry, 18, ROW_H, 4, DARK_BLUE, null);
-    setF(doc, 7.5, 'bold', WHITE);
-    doc.text(`WHY ${i+1}`, CARD_X + 9, ry + ROW_H/2 + 1.2, { align: 'center' });
-    setF(doc, 9, 'normal', DARK_TEXT);
-    doc.text(doc.splitTextToSize(why || '—', CARD_W - 26)[0], CARD_X + 22, ry + ROW_H/2 + 1.2);
-    ry += ROW_H + GAP;
+  const WHY_H = RH * 5 + GAP * 6 + 6;
+  card(doc, y, WHY_H);
+  sideLabel(doc, '5 Whys Analysis', y, WHY_H);
+  ry = y + GAP;
+  [data.why1, data.why2, data.why3, data.why4, data.why5].forEach(function(why, i) {
+    rr(doc, CX, ry, CW, RH, 4, i % 2 === 0 ? ROW_BG : WHITE, BORDER_LT, 0.35);
+    rr(doc, CX, ry, 20, RH, 4, DARK_BLUE, null, 0);
+    tf(doc, 7.5, 'bold', WHITE); doc.text('WHY ' + (i + 1), CX + 10, ry + RH / 2 + 1.2, { align: 'center' });
+    tf(doc, 9, 'normal', DARK_TEXT); doc.text(doc.splitTextToSize(why || '\u2014', CW - 28)[0], CX + 24, ry + RH / 2 + 1.2);
+    ry += RH + GAP;
   });
-  y += WHY_H + 5;
+  y += WHY_H + 4;
 
-  // Root Cause
-  const RC_H = 18;
-  sectionCard(doc, y, RC_H + 8);
-  sideLabel(doc, 'Root Cause', MARGIN, y, RC_H + 8);
-  rrect(doc, CARD_X, y + 4, CARD_W, RC_H, 4, [255, 240, 240], [229, 57, 53]);
-  redDot(doc, CARD_X + 6, y + 14);
-  setF(doc, 9, 'bold', DARK_TEXT); doc.text('Root Cause: ', CARD_X + 11, y + 14.5);
-  setF(doc, 9, 'bold', RED); doc.text(data.rootCause || '—', CARD_X + 11 + doc.getTextWidth('Root Cause: '), y + 14.5);
-  y += RC_H + 13;
+  const RC_H = 16;
+  card(doc, y, RC_H + 6);
+  sideLabel(doc, 'Root Cause', y, RC_H + 6);
+  rr(doc, CX, y + 3, CW, RC_H, 4, [255, 240, 240], [229, 57, 53], 0.5);
+  dot(doc, CX + 7, y + 11); tf(doc, 9.5, 'bold', DARK_TEXT); doc.text('Root Cause: ', CX + 12, y + 12.3);
+  tf(doc, 9.5, 'bold', RED); doc.text(data.rootCause || '\u2014', CX + 12 + doc.getTextWidth('Root Cause: '), y + 12.3);
+  y += RC_H + 10;
 
-  // Corrective actions
-  const caLines = doc.splitTextToSize(data.correctiveActions || '—', CARD_W - 16);
-  const CA_H = Math.max(28, caLines.length * 6.5 + 16);
-  sectionCard(doc, y, CA_H + 6);
-  sideLabel(doc, 'Corrective Actions', MARGIN, y, CA_H + 6);
-  rrect(doc, CARD_X, y + 3, CARD_W, CA_H, 4, WHITE, BORDER_L);
-  redDot(doc, CARD_X + 6, y + 11);
-  setF(doc, 9, 'bold', BLUE); doc.text('Corrective Actions', CARD_X + 11, y + 11.5);
-  setF(doc, 8.5, 'normal', BODY_TEXT);
-  caLines.slice(0, 6).forEach((l, i) => {
-    doc.setFillColor(...[120,130,145]); doc.circle(CARD_X + 8, y + 19 + i*6.5, 1.2, 'F');
-    doc.text(l, CARD_X + 12, y + 19 + i * 6.5);
+  const caLines = doc.splitTextToSize(data.correctiveActions || '\u2014', CW - 18);
+  const CA_H = Math.max(28, caLines.length * 6.5 + 18);
+  card(doc, y, CA_H + 4);
+  sideLabel(doc, 'Corrective Actions', y, CA_H + 4);
+  rr(doc, CX, y + 2, CW, CA_H, 5, WHITE, BORDER_LT, 0.4);
+  dot(doc, CX + 7, y + 10); tf(doc, 9.5, 'bold', BLUE); doc.text('Corrective Actions', CX + 12, y + 11.2);
+  tf(doc, 8.5, 'normal', BODY_TEXT);
+  caLines.slice(0, 7).forEach(function(l, i) {
+    doc.setFillColor(110, 125, 140); doc.circle(CX + 8, y + 18 + i * 6.5, 1.3, 'F');
+    doc.text(l, CX + 13, y + 18 + i * 6.5);
   });
-  y += CA_H + 11;
+  y += CA_H + 8;
 
-  // Footer
-  const FOOT_H = 14, FH = (CARD_W - GAP) / 2;
-  rrect(doc, CARD_X, y, FH, FOOT_H, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + 6, y + FOOT_H/2);
-  setF(doc, 9, 'bold', DARK_TEXT); doc.text('Analyst: ', CARD_X + 11, y + FOOT_H/2 + 1.2);
-  setF(doc, 9, 'bold', BLUE); doc.text(data.analystName || '___________', CARD_X + 11 + doc.getTextWidth('Analyst: '), y + FOOT_H/2 + 1.2);
-  rrect(doc, CARD_X + FH + GAP, y, FH, FOOT_H, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + FH + GAP + 6, y + FOOT_H/2);
-  setF(doc, 9, 'bold', DARK_TEXT); doc.text('Date: ', CARD_X + FH + GAP + 11, y + FOOT_H/2 + 1.2);
-  setF(doc, 9, 'bold', BLUE); doc.text(data.eventDate || '—', CARD_X + FH + GAP + 11 + doc.getTextWidth('Date: '), y + FOOT_H/2 + 1.2);
+  const FH2 = (CW - GAP) / 2;
+  rr(doc, CX, y, FH2, 14, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + 7, y + 7); tf(doc, 9.5, 'bold', DARK_TEXT); doc.text('Analyst: ', CX + 12, y + 8.3);
+  tf(doc, 9.5, 'bold', BLUE); doc.text(data.analystName || '___________', CX + 12 + doc.getTextWidth('Analyst: '), y + 8.3);
+  rr(doc, CX + FH2 + GAP, y, FH2, 14, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + FH2 + GAP + 7, y + 7); tf(doc, 9.5, 'bold', DARK_TEXT); doc.text('Date: ', CX + FH2 + GAP + 12, y + 8.3);
+  tf(doc, 9.5, 'bold', BLUE); doc.text(data.eventDate || '\u2014', CX + FH2 + GAP + 12 + doc.getTextWidth('Date: '), y + 8.3);
 
-  footer(doc, formId);
-  doc.save(`${formId}_RCFA.pdf`);
+  drawFooter(doc, formId);
+  doc.save(formId + '_RCFA.pdf');
   return formId;
 }
 
-// ─── SAFETY FORM ─────────────────────────────────────────────────────────────
+// ─── SAFETY FORM ──────────────────────────────────────────────────────────────
 export function generateSafetyPDF(data, millName) {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const formId = `SF-${String(Math.floor(Math.random()*999)).padStart(3,'0')}-${new Date().getFullYear()}`;
-  pageSetup(doc);
+  const doc    = new jsPDF({ unit: 'mm', format: 'a4' });
+  const num    = String(Math.floor(Math.random() * 999)).padStart(3, '0');
+  const formId = 'SF-' + num + '-' + new Date().getFullYear();
+  bg(doc);
   drawHeader(doc, 'Safety Form', 'Job Safety Analysis & PPE Checklist', millName);
 
-  const ROW_H = 11, GAP = 2.5;
-  const HALF = (CARD_W - GAP) / 2;
-  let y = 43;
+  const HALF = (CW - GAP) / 2;
+  let y = 45;
 
-  // General info
-  const GEN_H = ROW_H * 3 + GAP * 4 + 8;
-  sectionCard(doc, y, GEN_H);
-  sideLabel(doc, 'General Information', MARGIN, y, GEN_H);
-  let ry = y + 4;
-  fieldRow(doc, 'Date', data.date || '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Area', data.area || '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  ry += ROW_H + GAP;
-  fieldRow(doc, 'Employee', data.employeeName || '—', CARD_X, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  fieldRow(doc, 'Supervisor', data.supervisor || '—', CARD_X + HALF + GAP, ry, HALF, ROW_H, ROW_BG, 'bold', BLUE);
-  ry += ROW_H + GAP;
-  fieldRow(doc, 'Task', data.taskDescription || '—', CARD_X, ry, CARD_W, ROW_H, ROW_BG, 'bold', BLUE);
-  y += GEN_H + 5;
+  const GEN_H = RH * 3 + GAP * 4 + 6;
+  card(doc, y, GEN_H);
+  sideLabel(doc, 'General Information', y, GEN_H);
+  let ry = y + GAP;
+  row(doc, 'Date', data.date || '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Area', data.area || '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, BLUE);
+  ry += RH + GAP;
+  row(doc, 'Employee', data.employeeName || '\u2014', CX, ry, HALF, RH, ROW_BG, BLUE);
+  row(doc, 'Supervisor', data.supervisor || '\u2014', CX + HALF + GAP, ry, HALF, RH, ROW_BG, BLUE);
+  ry += RH + GAP;
+  row(doc, 'Task', data.taskDescription || '\u2014', CX, ry, CW, RH, ROW_BG, BLUE);
+  y += GEN_H + 4;
 
-  // PPE Checklist
   const ppeItems = [
     { key: 'hardHat', label: 'Hard Hat' }, { key: 'safetyGlasses', label: 'Safety Glasses' },
     { key: 'steelToeBoots', label: 'Steel Toe Boots' }, { key: 'highVisVest', label: 'High Vis Vest' },
     { key: 'hearingProtection', label: 'Hearing Protection' }, { key: 'gloves', label: 'Gloves' },
-    { key: 'fallProtection', label: 'Fall Protection' }, { key: 'faceShield', label: 'Face Shield' }
+    { key: 'fallProtection', label: 'Fall Protection' }, { key: 'faceShield', label: 'Face Shield' },
   ];
-  const PPE_H = 52;
-  sectionCard(doc, y, PPE_H);
-  sideLabel(doc, 'PPE Checklist', MARGIN, y, PPE_H);
-  rrect(doc, CARD_X, y + 3, CARD_W, PPE_H - 6, 5, [240, 246, 251], BORDER_L);
+  const PPE_H = 50;
+  card(doc, y, PPE_H);
+  sideLabel(doc, 'PPE Checklist', y, PPE_H);
+  rr(doc, CX, y + 2, CW, PPE_H - 4, 5, [238, 246, 252], BORDER_LT, 0.35);
   const COLS = 4;
-  ppeItems.forEach((item, i) => {
+  ppeItems.forEach(function(item, i) {
     const col = i % COLS;
-    const row = Math.floor(i / COLS);
-    const px = CARD_X + 4 + col * (CARD_W / COLS);
-    const py = y + 10 + row * 14;
+    const rw  = Math.floor(i / COLS);
+    const px  = CX + 4 + col * (CW / COLS);
+    const py  = y + 11 + rw * 15;
     const checked = data[item.key];
-    doc.setFillColor(...(checked ? [46, 139, 87] : [200, 215, 225]));
-    doc.roundedRect(px, py - 3, 6, 6, 1, 1, 'F');
-    if (checked) { setF(doc, 6, 'bold', WHITE); doc.text('✓', px + 0.8, py + 2.3); }
-    setF(doc, 8.5, checked ? 'bold' : 'normal', checked ? [46, 139, 87] : MUTED);
-    doc.text(item.label, px + 8, py + 1.5);
+    doc.setFillColor(...(checked ? [46, 139, 87] : [195, 212, 224]));
+    doc.roundedRect(px, py - 4, 6.5, 6.5, 1, 1, 'F');
+    if (checked) { tf(doc, 6, 'bold', WHITE); doc.text('\u2713', px + 0.8, py + 2.2); }
+    tf(doc, 8.5, checked ? 'bold' : 'normal', checked ? [46, 139, 87] : MUTED);
+    doc.text(item.label, px + 9, py + 1);
   });
-  y += PPE_H + 5;
+  y += PPE_H + 4;
 
-  // Hazards & Controls
   [
     { label: 'Hazards Identified', key: 'hazards', side: 'Hazards' },
-    { label: 'Control Measures', key: 'controlMeasures', side: 'Controls' }
-  ].forEach(({ label, key, side }) => {
-    const lines = doc.splitTextToSize(data[key] || '—', CARD_W - 16);
-    const h = Math.max(28, lines.length * 6.5 + 16);
-    sectionCard(doc, y, h + 6);
-    sideLabel(doc, side, MARGIN, y, h + 6);
-    rrect(doc, CARD_X, y + 3, CARD_W, h, 5, WHITE, BORDER_L);
-    redDot(doc, CARD_X + 6, y + 11);
-    setF(doc, 9, 'bold', BLUE); doc.text(label, CARD_X + 11, y + 11.5);
-    setF(doc, 8.5, 'normal', BODY_TEXT);
-    lines.slice(0, 5).forEach((l, i) => {
-      doc.setFillColor(...[120,130,145]); doc.circle(CARD_X + 8, y + 19 + i * 6.5, 1.2, 'F');
-      doc.text(l, CARD_X + 12, y + 19 + i * 6.5);
+    { label: 'Control Measures', key: 'controlMeasures', side: 'Controls' },
+  ].forEach(function(item) {
+    const lines = doc.splitTextToSize(data[item.key] || '\u2014', CW - 16);
+    const h = Math.max(26, lines.length * 6.5 + 18);
+    card(doc, y, h + 4);
+    sideLabel(doc, item.side, y, h + 4);
+    rr(doc, CX, y + 2, CW, h, 5, WHITE, BORDER_LT, 0.4);
+    dot(doc, CX + 7, y + 10); tf(doc, 9.5, 'bold', BLUE); doc.text(item.label, CX + 12, y + 11.2);
+    tf(doc, 8.5, 'normal', BODY_TEXT);
+    lines.slice(0, 6).forEach(function(l, i) {
+      doc.setFillColor(110, 125, 140); doc.circle(CX + 8, y + 18 + i * 6.5, 1.3, 'F');
+      doc.text(l, CX + 13, y + 18 + i * 6.5);
     });
-    y += h + 11;
+    y += h + 8;
   });
 
-  // Sign-off
-  const SH = 22;
-  rrect(doc, CARD_X, y, HALF, SH, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + 6, y + 8); setF(doc, 8, 'bold', MUTED); doc.text('Employee Signature', CARD_X + 11, y + 8.5);
-  doc.setDrawColor(...BORDER_CLR); doc.setLineWidth(0.4); doc.line(CARD_X + 6, y + 18, CARD_X + HALF - 4, y + 18);
-  setF(doc, 9, 'bold', BLUE); doc.text(data.employeeName || '', CARD_X + 6, y + 17);
+  const SH = 24;
+  rr(doc, CX, y, HALF, SH, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + 7, y + 8); tf(doc, 8, 'bold', MUTED); doc.text('Employee Signature', CX + 12, y + 9);
+  doc.setDrawColor(...BORDER); doc.setLineWidth(0.4); doc.line(CX + 5, y + 20, CX + HALF - 4, y + 20);
+  tf(doc, 9.5, 'bold', BLUE); doc.text(data.employeeName || '', CX + 5, y + 19);
+  rr(doc, CX + HALF + GAP, y, HALF, SH, 4, ROW_BG, BORDER_LT, 0.4);
+  dot(doc, CX + HALF + GAP + 7, y + 8); tf(doc, 8, 'bold', MUTED); doc.text('Supervisor Signature', CX + HALF + GAP + 12, y + 9);
+  doc.setDrawColor(...BORDER); doc.line(CX + HALF + GAP + 5, y + 20, CX + CW - 4, y + 20);
+  tf(doc, 9.5, 'bold', BLUE); doc.text(data.supervisor || '', CX + HALF + GAP + 5, y + 19);
 
-  rrect(doc, CARD_X + HALF + GAP, y, HALF, SH, 4, ROW_BG, BORDER_L);
-  redDot(doc, CARD_X + HALF + GAP + 6, y + 8); setF(doc, 8, 'bold', MUTED); doc.text('Supervisor Signature', CARD_X + HALF + GAP + 11, y + 8.5);
-  doc.setDrawColor(...BORDER_CLR); doc.line(CARD_X + HALF + GAP + 6, y + 18, CARD_X + CARD_W - 4, y + 18);
-  setF(doc, 9, 'bold', BLUE); doc.text(data.supervisor || '', CARD_X + HALF + GAP + 6, y + 17);
-
-  footer(doc, formId);
-  doc.save(`${formId}_Safety_Form.pdf`);
+  drawFooter(doc, formId);
+  doc.save(formId + '_Safety_Form.pdf');
   return formId;
 }
