@@ -323,7 +323,8 @@ export function generateSafetyPDF(data, millName) {
     const py = y + row * 10;
     doc.setFillColor(item.checked ? 0 : 20, item.checked ? 255 : 30, item.checked ? 136 : 50);
     doc.circle(px + 3, py + 3, 3, 'F');
-    doc.setTextColor(item.checked ? ...ANDRITZ_ORANGE : ...TEXT_DIM);
+    const textColor = item.checked ? ANDRITZ_ORANGE : TEXT_DIM;
+    doc.setTextColor(...textColor);
     doc.setFontSize(9);
     doc.text(item.label, px + 9, py + 4.5);
   });
