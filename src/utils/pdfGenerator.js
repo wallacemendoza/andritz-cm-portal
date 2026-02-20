@@ -9,7 +9,7 @@ const WHITE      = [255, 255, 255];
 const DARK_TEXT  = [40, 50, 65];
 const BODY_TEXT  = [70, 85, 105];
 const MUTED      = [130, 150, 170];
-const ORANGE     = [220, 100, 0];
+
 const PAGE_BG    = [221, 234, 243];   // light steel-blue page bg
 const CARD_BG    = [240, 246, 251];   // section card bg
 const ROW_BG     = [235, 244, 251];   // normal row bg
@@ -48,7 +48,6 @@ function rrect(doc, x, y, w, h, r, bg, stroke) {
   if (stroke) { doc.setDrawColor(...stroke); doc.setLineWidth(0.5); }
   else        { doc.setDrawColor(255,255,255); doc.setLineWidth(0); }
 
-  const p = doc.beginPath ? null : null;
   // jsPDF has roundedRect
   if (bg && stroke) doc.roundedRect(x, y, w, h, r, r, 'FD');
   else if (bg)      doc.roundedRect(x, y, w, h, r, r, 'F');
