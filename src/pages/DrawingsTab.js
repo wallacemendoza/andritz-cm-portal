@@ -57,16 +57,16 @@ function Pulp3FifthFloorMap() {
         {/* Grid */}
         <defs>
           <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
-            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,200,255,0.06)" strokeWidth="0.5" />
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,117,190,0.06)" strokeWidth="0.5" />
           </pattern>
           <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,200,255,0.6)" />
+            <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,117,190,0.6)" />
           </marker>
         </defs>
         <rect width="760" height="480" fill="url(#grid)" />
 
         {/* Floor boundary */}
-        <rect x="60" y="60" width="680" height="360" fill="none" stroke="rgba(0,200,255,0.2)" strokeWidth="1.5" strokeDasharray="4,4" />
+        <rect x="60" y="60" width="680" height="360" fill="none" stroke="rgba(0,117,190,0.2)" strokeWidth="1.5" strokeDasharray="4,4" />
 
         {/* Stairs indicators */}
         {/* Left staircase */}
@@ -76,8 +76,8 @@ function Pulp3FifthFloorMap() {
         {[0, 8, 16, 24, 32].map(i => <line key={i} x1="60" y1={355 + i} x2="110" y2={355 + i} stroke="rgba(255,45,85,0.3)" strokeWidth="0.5" />)}
 
         {/* Center staircase */}
-        <rect x="245" y="195" width="55" height="100" fill="rgba(0,200,255,0.05)" stroke="rgba(0,200,255,0.2)" strokeWidth="1" />
-        {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90].map(i => <line key={i} x1="245" y1={200 + i} x2="300" y2={200 + i} stroke="rgba(0,200,255,0.15)" strokeWidth="0.5" />)}
+        <rect x="245" y="195" width="55" height="100" fill="rgba(0,117,190,0.05)" stroke="rgba(0,117,190,0.2)" strokeWidth="1" />
+        {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90].map(i => <line key={i} x1="245" y1={200 + i} x2="300" y2={200 + i} stroke="rgba(0,117,190,0.15)" strokeWidth="0.5" />)}
 
         {/* Top right staircase */}
         <rect x="650" y="60" width="90" height="40" fill="rgba(255,45,85,0.1)" stroke="rgba(255,45,85,0.4)" strokeWidth="1" />
@@ -92,7 +92,7 @@ function Pulp3FifthFloorMap() {
         {/* Arrows */}
         {arrows.map((a, i) => (
           <line key={i} x1={a.x1} y1={a.y1} x2={a.x2} y2={a.y2}
-            stroke="rgba(0,200,255,0.5)" strokeWidth="1.5" markerEnd="url(#arrow)" />
+            stroke="rgba(0,117,190,0.5)" strokeWidth="1.5" markerEnd="url(#arrow)" />
         ))}
 
         {/* Circular assets (gray circles) */}
@@ -106,9 +106,9 @@ function Pulp3FifthFloorMap() {
         {/* Assets */}
         {assets.map(asset => {
           const isHovered = tooltip?.id === asset.id;
-          const color = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'rgba(0,200,255,0.15)' : 'rgba(255,45,85,0.2)';
-          const borderColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--accent-cyan)' : 'var(--accent-red)';
-          const textColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--accent-cyan)' : 'var(--accent-red)';
+          const color = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'rgba(0,117,190,0.15)' : 'rgba(255,45,85,0.2)';
+          const borderColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--andritz-blue)' : 'var(--accent-red)';
+          const textColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--andritz-blue)' : 'var(--accent-red)';
 
           return (
             <g key={asset.id} transform={`translate(${asset.x}, ${asset.y})`}
@@ -118,7 +118,7 @@ function Pulp3FifthFloorMap() {
               <rect
                 x={-20} y={-12} width={40} height={22}
                 rx={2}
-                fill={isHovered ? (asset.inRoute ? 'rgba(0,200,255,0.3)' : 'rgba(255,45,85,0.35)') : color}
+                fill={isHovered ? (asset.inRoute ? 'rgba(0,117,190,0.3)' : 'rgba(255,45,85,0.35)') : color}
                 stroke={borderColor}
                 strokeWidth={isHovered ? 1.5 : 1}
               />
@@ -137,8 +137,8 @@ function Pulp3FifthFloorMap() {
         {/* Tooltip */}
         {tooltip && (
           <g transform={`translate(${Math.min(tooltip.x + 10, 680)}, ${Math.max(tooltip.y - 40, 10)})`}>
-            <rect x={0} y={0} width={120} height={36} rx={2} fill="var(--bg-elevated)" stroke="var(--accent-cyan)" strokeWidth={0.5} />
-            <text x={10} y={15} fill="var(--accent-cyan)" fontSize="10" fontFamily="var(--font-mono)" fontWeight="bold">
+            <rect x={0} y={0} width={120} height={36} rx={2} fill="var(--bg-elevated)" stroke="var(--andritz-blue)" strokeWidth={0.5} />
+            <text x={10} y={15} fill="var(--andritz-blue)" fontSize="10" fontFamily="var(--font-mono)" fontWeight="bold">
               ID: {tooltip.id}
             </text>
             <text x={10} y={28} fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-mono)">
@@ -149,7 +149,7 @@ function Pulp3FifthFloorMap() {
 
         {/* Legend */}
         <g transform="translate(60, 440)">
-          <rect x={0} y={0} width={12} height={12} fill="rgba(0,200,255,0.15)" stroke="var(--accent-cyan)" strokeWidth={1} />
+          <rect x={0} y={0} width={12} height={12} fill="rgba(0,117,190,0.15)" stroke="var(--andritz-blue)" strokeWidth={1} />
           <text x={16} y={10} fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-mono)">In offline route</text>
           <rect x={130} y={0} width={12} height={12} fill="rgba(255,45,85,0.2)" stroke="var(--accent-red)" strokeWidth={1} />
           <text x={146} y={10} fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-mono)">Not in offline route</text>
@@ -161,7 +161,7 @@ function Pulp3FifthFloorMap() {
         <text x="380" y="40" fill="var(--text-primary)" fontSize="16" textAnchor="middle" fontFamily="var(--font-display)" fontWeight="bold" letterSpacing="2">
           PULP #3 — 5TH FLOOR
         </text>
-        <text x="380" y="54" fill="var(--accent-cyan)" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)" letterSpacing="3" opacity="0.7">
+        <text x="380" y="54" fill="var(--andritz-blue)" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)" letterSpacing="3" opacity="0.7">
           VIBRATION ROUTE MAP · TAKE ELEVATOR TO 5TH FLOOR
         </text>
       </svg>
@@ -263,8 +263,8 @@ export default function DrawingsTab({ mill }) {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '8px 28px',
                   fontFamily: 'var(--font-body)', fontSize: 14,
-                  color: selected.subarea === sub ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                  background: selected.subarea === sub ? 'rgba(0,200,255,0.05)' : 'transparent',
+                  color: selected.subarea === sub ? 'var(--andritz-blue)' : 'var(--text-muted)',
+                  background: selected.subarea === sub ? 'rgba(0,117,190,0.05)' : 'transparent',
                   transition: 'all 0.2s'
                 }}>
                   ○ {sub}
@@ -277,8 +277,8 @@ export default function DrawingsTab({ mill }) {
                     padding: '7px 40px',
                     fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 1,
                     color: selected.floor === floor ? '#fff' : 'var(--text-muted)',
-                    background: selected.floor === floor ? 'rgba(0,200,255,0.08)' : 'transparent',
-                    borderLeft: selected.floor === floor ? '2px solid var(--accent-cyan)' : '2px solid transparent',
+                    background: selected.floor === floor ? 'rgba(0,117,190,0.08)' : 'transparent',
+                    borderLeft: selected.floor === floor ? '2px solid var(--andritz-blue)' : '2px solid transparent',
                     transition: 'all 0.2s',
                     display: 'flex', alignItems: 'center', gap: 8
                   }}>

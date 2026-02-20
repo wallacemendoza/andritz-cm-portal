@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const ANDRITZ_ORANGE = [255, 107, 53];
+const ANDRITZ_ORANGE = [0, 117, 190];
 const ANDRITZ_DARK = [2, 4, 8];
 const ANDRITZ_GRAY = [30, 40, 55];
 const TEXT_LIGHT = [232, 244, 253];

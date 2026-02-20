@@ -6,8 +6,8 @@ export const MILLS = {
     shortName: 'CWP Augusta',
     location: 'Augusta, GA',
     client: 'Clearwater Paper',
-    color: '#00c8ff',
-    accentColor: '#0090cc',
+    color: '#0075BE',
+    accentColor: '#003A70',
     areas: {
       pulp: {
         name: 'Pulp',
@@ -51,8 +51,8 @@ export const MILLS = {
     shortName: 'GPI Macon',
     location: 'Macon, GA',
     client: 'Graphic Packaging International',
-    color: '#ff6b35',
-    accentColor: '#cc4400',
+    color: '#0075BE',
+    accentColor: '#003A70',
     areas: {
       pm1: {
         name: 'PM1',
@@ -91,8 +91,8 @@ export const MILLS = {
     shortName: 'New Indy Catawba',
     location: 'Catawba, SC',
     client: 'New Indy Container Board',
-    color: '#00ff88',
-    accentColor: '#00bb66',
+    color: '#0075BE',
+    accentColor: '#003A70',
     areas: {
       pm1: {
         name: 'PM1',

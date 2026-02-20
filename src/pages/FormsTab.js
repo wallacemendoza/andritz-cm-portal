@@ -13,7 +13,7 @@ const FORM_TYPES = [
     name: 'Condition Monitor Form',
     description: 'Record vibration analysis, diagnosis, and recommendations for equipment.',
     icon: '📊',
-    color: 'var(--accent-cyan)'
+    color: 'var(--andritz-blue)'
   },
   {
     id: 'post-maintenance',
@@ -367,7 +367,7 @@ export default function FormsTab({ mill }) {
       <div style={{
         marginTop: 48,
         padding: '20px 24px',
-        background: 'rgba(0,200,255,0.04)',
+        background: 'rgba(0,117,190,0.04)',
         border: '1px solid var(--border-dim)',
         borderRadius: 2,
         display: 'flex', alignItems: 'center', gap: 16

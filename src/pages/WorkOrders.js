@@ -6,7 +6,7 @@ const STATUSES = ['open', 'in-progress', 'completed', 'on-hold'];
 const PRIORITIES = ['low', 'medium', 'high', 'critical'];
 
 const STATUS_COLORS = {
-  open: 'var(--accent-cyan)',
+  open: 'var(--andritz-blue)',
   'in-progress': 'var(--accent-orange)',
   completed: 'var(--accent-green)',
   'on-hold': 'var(--accent-yellow)'
@@ -268,7 +268,7 @@ export default function WorkOrders({ mill }) {
                       padding: '24px',
                       textAlign: 'center',
                       cursor: 'pointer',
-                      background: 'rgba(0,200,255,0.03)',
+                      background: 'rgba(0,117,190,0.03)',
                       transition: 'background 0.2s'
                     }}
                   >

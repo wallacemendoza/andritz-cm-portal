@@ -36,7 +36,7 @@ function ParticleField() {
           top: `${p.y}%`,
           width: p.size,
           height: p.size,
-          background: '#00c8ff',
+          background: '#0075BE',
           borderRadius: '50%',
           animation: `pulse-glow ${p.dur}s ease-in-out infinite`,
           animationDelay: `${p.delay}s`,
@@ -72,7 +72,7 @@ export default function MillSelector() {
       <div style={{
         position: 'absolute', top: '20%', left: '10%',
         width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(0,200,255,0.06) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(0,117,190,0.06) 0%, transparent 70%)',
         pointerEvents: 'none'
       }} />
       <div style={{
@@ -86,7 +86,7 @@ export default function MillSelector() {
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0,
         height: 3,
-        background: 'linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-orange), transparent)',
+        background: 'linear-gradient(90deg, transparent, var(--andritz-blue), var(--andritz-blue), transparent)',
         zIndex: 100
       }} />
 
@@ -108,7 +108,7 @@ export default function MillSelector() {
           }}>
             <div style={{
               width: 60, height: 60,
-              background: 'linear-gradient(135deg, var(--accent-orange), #cc4400)',
+              background: 'linear-gradient(135deg, var(--andritz-blue), #cc4400)',
               clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 0 30px rgba(255,107,53,0.6)'
@@ -120,7 +120,7 @@ export default function MillSelector() {
 
         <div style={{
           fontFamily: 'var(--font-mono)', fontSize: 11,
-          letterSpacing: 6, color: 'var(--accent-cyan)',
+          letterSpacing: 6, color: 'var(--andritz-blue)',
           marginBottom: 8, opacity: 0.7
         }}>
           ANDRITZ GROUP
@@ -132,7 +132,7 @@ export default function MillSelector() {
           letterSpacing: 4,
           lineHeight: 1,
           marginBottom: 12,
-          background: 'linear-gradient(135deg, #fff 0%, var(--accent-cyan) 50%, var(--accent-orange) 100%)',
+          background: 'linear-gradient(135deg, #fff 0%, var(--andritz-blue) 50%, var(--andritz-blue) 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent'
         }}>

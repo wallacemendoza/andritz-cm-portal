@@ -85,7 +85,7 @@ export default function MillDashboard() {
           {/* Andritz label */}
           <div style={{
             fontFamily: 'var(--font-display)', fontSize: 11,
-            color: 'var(--accent-orange)', letterSpacing: 4, opacity: 0.7
+            color: 'var(--andritz-blue)', letterSpacing: 4, opacity: 0.7
           }}>
             ANDRITZ
           </div>
@@ -140,12 +140,12 @@ function StatCard({ label, value, unit, color, icon }) {
       }}>{icon}</div>
       <div style={{
         fontFamily: 'var(--font-mono)', fontSize: 9,
-        color: color || 'var(--accent-cyan)', letterSpacing: 3,
+        color: color || 'var(--andritz-blue)', letterSpacing: 3,
         textTransform: 'uppercase', marginBottom: 8, opacity: 0.8
       }}>{label}</div>
       <div style={{
         fontFamily: 'var(--font-display)', fontSize: 36,
-        color: color || 'var(--accent-cyan)', lineHeight: 1, marginBottom: 4
+        color: color || 'var(--andritz-blue)', lineHeight: 1, marginBottom: 4
       }}>{value}</div>
       {unit && <div style={{
         fontFamily: 'var(--font-mono)', fontSize: 10,
@@ -190,9 +190,9 @@ function OverviewTab({ mill, onNavigate }) {
         gap: 20, marginBottom: 48
       }}>
         <StatCard label="Monitored Areas" value={areas.length} icon="◈" color={mill.color} />
-        <StatCard label="Sub-Areas" value={totalSubareas} icon="◉" color="var(--accent-cyan)" />
+        <StatCard label="Sub-Areas" value={totalSubareas} icon="◉" color="var(--andritz-blue)" />
         <StatCard label="System Status" value="LIVE" unit="All sensors online" icon="◎" color="var(--accent-green)" />
-        <StatCard label="Last Sync" value="NOW" unit={new Date().toLocaleDateString()} icon="⟳" color="var(--accent-orange)" />
+        <StatCard label="Last Sync" value="NOW" unit={new Date().toLocaleDateString()} icon="⟳" color="var(--andritz-blue)" />
       </div>
 
       {/* Areas grid */}
@@ -253,8 +253,8 @@ function OverviewTab({ mill, onNavigate }) {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
           { label: 'New Work Order', tab: 'work-orders', color: mill.color },
-          { label: 'View Drawings', tab: 'drawings', color: 'var(--accent-cyan)' },
-          { label: 'Fill Form', tab: 'forms', color: 'var(--accent-orange)' }
+          { label: 'View Drawings', tab: 'drawings', color: 'var(--andritz-blue)' },
+          { label: 'Fill Form', tab: 'forms', color: 'var(--andritz-blue)' }
         ].map(a => (
           <button key={a.label} onClick={() => onNavigate(a.tab)} style={{
             all: 'unset', cursor: 'pointer',
