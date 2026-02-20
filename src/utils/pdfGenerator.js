@@ -28,12 +28,6 @@ function boldLabel(doc, text, x, y, color = BLUE) {
   doc.text(text, x, y);
 }
 
-function normalText(doc, text, x, y, color = BLACK, size = 9) {
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(size);
-  doc.setTextColor(...color);
-  doc.text(text || '—', x, y);
-}
 
 function infoRow(doc, label, value, x, y, valueColor = BLACK) {
   redDot(doc, x, y - 1);
