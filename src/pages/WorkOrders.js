@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useWorkOrders } from '../hooks/useLocalStorage';
 import toast from 'react-hot-toast';
-import { format } from 'date-fns';
 
 const STATUSES = ['open', 'in-progress', 'completed', 'on-hold'];
 const PRIORITIES = ['low', 'medium', 'high', 'critical'];

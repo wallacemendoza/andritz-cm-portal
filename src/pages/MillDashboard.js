@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, Routes, Route, Navigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MILLS } from '../data/mills';
 import WorkOrders from './WorkOrders';
 import DrawingsTab from './DrawingsTab';
