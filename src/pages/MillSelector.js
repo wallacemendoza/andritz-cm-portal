@@ -4,260 +4,187 @@ import { MILLS } from '../data/mills';
 
 const mills = Object.values(MILLS);
 
-
-function ParticleField() {
-  const particles = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 1,
-    dur: Math.random() * 4 + 3,
-    delay: Math.random() * 4
-  }));
-  return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-      {particles.map(p => (
-        <div key={p.id} style={{
-          position: 'absolute',
-          left: `${p.x}%`,
-          top: `${p.y}%`,
-          width: p.size,
-          height: p.size,
-          background: '#0075BE',
-          borderRadius: '50%',
-          animation: `pulse-glow ${p.dur}s ease-in-out infinite`,
-          animationDelay: `${p.delay}s`,
-          opacity: 0.3
-        }} />
-      ))}
-    </div>
-  );
-}
-
 export default function MillSelector() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setTimeout(() => setMounted(true), 100); }, []);
+  useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
 
   return (
-    <div className="grid-bg" style={{
-      minHeight: '100vh',
-      background: 'var(--bg-void)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      overflow: 'hidden',
-      padding: '40px 24px'
-    }}>
-      <ParticleField />
+    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column' }}>
 
-      {/* Ambient glow orbs */}
-      <div style={{
-        position: 'absolute', top: '20%', left: '10%',
-        width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(0,117,190,0.06) 0%, transparent 70%)',
-        pointerEvents: 'none'
-      }} />
-      <div style={{
-        position: 'absolute', bottom: '15%', right: '8%',
-        width: 500, height: 500,
-        background: 'radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 70%)',
-        pointerEvents: 'none'
-      }} />
-
-      {/* Top bar */}
-      <div style={{
-        position: 'fixed', top: 0, left: 0, right: 0,
-        height: 3,
-        background: 'linear-gradient(90deg, transparent, var(--andritz-blue), var(--andritz-blue), transparent)',
-        zIndex: 100
-      }} />
-
-      {/* Logo & Title */}
-      <div style={{
-        textAlign: 'center', marginBottom: 64,
-        opacity: mounted ? 1 : 0,
-        transform: mounted ? 'translateY(0)' : 'translateY(-30px)',
-        transition: 'all 0.8s cubic-bezier(0.4,0,0.2,1)'
+      {/* ── TOP NAVBAR ── white with blue accent */}
+      <nav style={{
+        background: '#fff',
+        borderBottom: '1px solid var(--border-light)',
+        boxShadow: '0 2px 12px rgba(0,58,112,0.07)',
+        position: 'sticky', top: 0, zIndex: 100
       }}>
-        {/* ANDRITZ Official Logo */}
-        <div style={{ marginBottom: 40, display: 'flex', justifyContent: 'center' }}>
-          <img
-            src="/andritz-logo.svg"
-            alt="ANDRITZ"
-            style={{
-              width: 240,
-              filter: 'brightness(0) invert(1)',
-              opacity: 0.95
-            }}
-          />
+        <div style={{ height: 3, background: 'linear-gradient(90deg, var(--blue-dark), var(--blue), var(--blue-light))' }} />
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 62, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <img src="/andritz-logo.svg" alt="ANDRITZ" style={{ height: 26 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', animation: 'pulse-glow 2s infinite' }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: 2 }}>
+              ALL SYSTEMS OPERATIONAL
+            </span>
+          </div>
         </div>
-        <h1 className="glow-text" style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(28px, 5vw, 56px)',
-          fontWeight: 900,
-          letterSpacing: 4,
-          lineHeight: 1,
-          marginBottom: 12,
-          background: 'linear-gradient(135deg, #fff 0%, var(--andritz-blue) 50%, var(--andritz-blue) 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>
-          CONDITION MONITORING
-        </h1>
-        <p style={{
-          fontFamily: 'var(--font-mono)', fontSize: 12,
-          letterSpacing: 3, color: 'var(--text-muted)',
-          textTransform: 'uppercase'
-        }}>
-          Paper Mill Operations Portal — Select Facility
-        </p>
+      </nav>
+
+      {/* ── HERO ── light blue gradient, NOT dark navy */}
+      <div style={{
+        background: 'linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 55%, var(--blue-light) 100%)',
+        padding: '64px 32px 56px',
+        position: 'relative', overflow: 'hidden'
+      }}>
+        {/* Blueprint grid overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }} />
+        {/* Radial glow */}
+        <div style={{ position: 'absolute', top: '-20%', right: '5%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-30%', left: '0%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(0,58,112,0.4) 0%, transparent 65%)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+          <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'none' : 'translateY(-16px)', transition: 'all 0.7s ease', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 5, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', marginBottom: 18 }}>
+              Paper Mill Operations · Condition Monitoring
+            </div>
+            <h1 style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(24px, 4vw, 48px)',
+              fontWeight: 900, letterSpacing: 3,
+              color: '#fff', lineHeight: 1.1, marginBottom: 16
+            }}>
+              CONDITION MONITORING PORTAL
+            </h1>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(255,255,255,0.7)', maxWidth: 560, margin: '0 auto 40px' }}>
+              Select a facility to access dashboards, work orders, route drawings and forms
+            </p>
+
+            {/* Stats */}
+            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 8, overflow: 'hidden' }}>
+              {[{ label: 'Active Mills', val: '3' }, { label: 'Areas Monitored', val: '12+' }, { label: 'System Status', val: 'LIVE' }].map((s, i) => (
+                <div key={i} style={{ padding: '16px 36px', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.15)' : 'none', textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: '#fff', lineHeight: 1 }}>{s.val}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.5)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 5 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Mill Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: 24,
-        maxWidth: 1100,
-        width: '100%',
-      }}>
-        {mills.map((mill, idx) => (
-          <button
-            key={mill.id}
-            onClick={() => navigate(`/mill/${mill.id}`)}
-            onMouseEnter={() => setHovered(mill.id)}
-            onMouseLeave={() => setHovered(null)}
-            style={{
-              all: 'unset',
-              cursor: 'pointer',
-              opacity: mounted ? 1 : 0,
-              transform: mounted ? 'translateY(0)' : 'translateY(40px)',
-              transition: `all 0.7s cubic-bezier(0.4,0,0.2,1) ${idx * 0.1 + 0.2}s`
-            }}
-          >
-            <div style={{
-              background: hovered === mill.id
-                ? `linear-gradient(135deg, rgba(${mill.id === 'clearwater-augusta' ? '0,200,255' : mill.id === 'gpi-macon' ? '255,107,53' : '0,255,136'},0.08) 0%, var(--bg-card) 100%)`
-                : 'var(--bg-card)',
-              border: `1px solid ${hovered === mill.id ? mill.color : 'var(--border-dim)'}`,
-              borderRadius: 2,
-              padding: '32px 28px',
-              transition: 'all 0.35s ease',
-              clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%)',
-              boxShadow: hovered === mill.id ? `0 0 40px ${mill.color}22, 0 20px 60px rgba(0,0,0,0.4)` : '0 8px 32px rgba(0,0,0,0.3)',
-              position: 'relative',
-              textAlign: 'left'
-            }}>
-              {/* Corner accent */}
-              <div style={{
-                position: 'absolute', top: 0, right: 0,
-                width: 0, height: 0,
-                borderLeft: '20px solid transparent',
-                borderTop: `20px solid ${hovered === mill.id ? mill.color : 'var(--border-dim)'}`,
-                transition: 'border-color 0.35s ease'
-              }} />
+      {/* ── CARDS SECTION ── white/light background */}
+      <div className="grid-bg-light" style={{ flex: 1, padding: '52px 32px 72px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
-              {/* Status dot */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 36 }}>
+            <div>
+              <div className="section-header">
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--blue-dark)', letterSpacing: 1.5 }}>SELECT FACILITY</h2>
+              </div>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: 1 }}>
+                {mills.length} locations available
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
+            {mills.map((mill, idx) => (
+              <button key={mill.id}
+                onClick={() => navigate(`/mill/${mill.id}`)}
+                onMouseEnter={() => setHovered(mill.id)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  all: 'unset', cursor: 'pointer',
+                  opacity: mounted ? 1 : 0,
+                  transform: mounted ? 'translateY(0)' : 'translateY(28px)',
+                  transition: `opacity 0.55s ease ${idx * 0.1 + 0.15}s, transform 0.55s ease ${idx * 0.1 + 0.15}s`
+                }}
+              >
                 <div style={{
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: mill.color,
-                  boxShadow: `0 0 10px ${mill.color}`,
-                  animation: 'pulse-glow 2s infinite'
-                }} />
-                <span style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 9,
-                  letterSpacing: 3, color: mill.color,
-                  textTransform: 'uppercase', opacity: 0.8
+                  background: '#fff',
+                  border: `1.5px solid ${hovered === mill.id ? 'var(--blue)' : 'rgba(0,117,190,0.14)'}`,
+                  borderRadius: 10,
+                  overflow: 'hidden',
+                  boxShadow: hovered === mill.id ? '0 10px 44px rgba(0,117,190,0.18)' : 'var(--shadow-sm)',
+                  transform: hovered === mill.id ? 'translateY(-5px)' : 'translateY(0)',
+                  transition: 'all 0.26s ease',
+                  textAlign: 'left'
                 }}>
-                  ONLINE · ACTIVE
-                </span>
-              </div>
+                  {/* Top gradient bar */}
+                  <div style={{
+                    height: 5,
+                    background: hovered === mill.id
+                      ? 'linear-gradient(90deg, var(--blue-dark), var(--blue), var(--blue-light))'
+                      : 'linear-gradient(90deg, var(--blue-dark), var(--blue))',
+                    transition: 'all 0.26s ease'
+                  }} />
 
-              {/* Mill name */}
-              <h2 style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 18,
-                fontWeight: 700,
-                color: '#fff',
-                marginBottom: 6,
-                letterSpacing: 1
-              }}>
-                {mill.shortName}
-              </h2>
-              <div style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: 16,
-                color: 'var(--text-secondary)',
-                marginBottom: 4
-              }}>
-                {mill.name}
-              </div>
-              <div style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: mill.color,
-                marginBottom: 24,
-                opacity: 0.7
-              }}>
-                📍 {mill.location}
-              </div>
-
-              {/* Stats row */}
-              <div style={{
-                display: 'flex', gap: 16,
-                paddingTop: 16,
-                borderTop: `1px solid ${hovered === mill.id ? mill.color + '33' : 'var(--border-dim)'}`
-              }}>
-                {[
-                  { label: 'Areas', val: Object.keys(mill.areas).length },
-                  { label: 'Sub-Areas', val: Object.values(mill.areas).reduce((a, b) => a + Object.keys(b.subareas || {}).length, 0) },
-                  { label: 'Status', val: 'Active' }
-                ].map(stat => (
-                  <div key={stat.label}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: mill.color }}>
-                      {stat.val}
+                  <div style={{ padding: '26px 28px' }}>
+                    {/* Header row */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 8px rgba(29,185,84,0.5)', animation: 'pulse-glow 2.5s infinite' }} />
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--green)', letterSpacing: 2, textTransform: 'uppercase' }}>Online</span>
+                      </div>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-dim)', letterSpacing: 1 }}>
+                        {Object.keys(mill.areas).length} areas
+                      </span>
                     </div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase' }}>
-                      {stat.label}
+
+                    {/* Mill name */}
+                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, color: 'var(--blue-dark)', letterSpacing: 1, marginBottom: 4 }}>
+                      {mill.shortName}
+                    </h3>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--text-body)', marginBottom: 4 }}>{mill.name}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--blue)', letterSpacing: 1, marginBottom: 24 }}>
+                      📍 {mill.location}
+                    </div>
+
+                    {/* Area chips */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 24 }}>
+                      {Object.values(mill.areas).map(a => (
+                        <span key={a.name} style={{
+                          fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--blue-dark)',
+                          background: 'var(--blue-tint)', border: '1px solid rgba(0,117,190,0.18)',
+                          padding: '3px 10px', borderRadius: 20, letterSpacing: 0.5
+                        }}>{a.name}</span>
+                      ))}
+                    </div>
+
+                    {/* CTA */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid rgba(0,117,190,0.09)' }}>
+                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 10, color: hovered === mill.id ? 'var(--blue)' : 'var(--text-dim)', letterSpacing: 2, textTransform: 'uppercase', transition: 'color 0.2s' }}>
+                        Enter Facility
+                      </span>
+                      <div style={{
+                        width: 34, height: 34, borderRadius: '50%',
+                        background: hovered === mill.id ? 'var(--blue)' : 'var(--blue-tint)',
+                        border: '1.5px solid rgba(0,117,190,0.25)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.22s ease', fontSize: 15,
+                        color: hovered === mill.id ? '#fff' : 'var(--blue)'
+                      }}>→</div>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {/* Enter CTA */}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                marginTop: 20,
-                color: mill.color,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                letterSpacing: 2,
-                opacity: hovered === mill.id ? 1 : 0,
-                transform: hovered === mill.id ? 'translateX(0)' : 'translateX(-10px)',
-                transition: 'all 0.25s ease'
-              }}>
-                <span>ENTER FACILITY</span>
-                <span>→</span>
-              </div>
-            </div>
-          </button>
-        ))}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Footer */}
-      <div style={{
-        position: 'fixed', bottom: 24, left: 0, right: 0,
-        textAlign: 'center',
-        fontFamily: 'var(--font-mono)', fontSize: 9,
-        color: 'var(--text-muted)', letterSpacing: 3
-      }}>
-        ANDRITZ CONDITION MONITORING SYSTEM · v2.0.0 · {new Date().getFullYear()}
+      {/* ── FOOTER ── subtle blue bottom bar */}
+      <div style={{ background: 'var(--blue-dark)', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <img src="/andritz-logo.svg" alt="ANDRITZ" style={{ height: 16, filter: 'brightness(0) invert(1)', opacity: 0.65 }} />
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.3)', letterSpacing: 2 }}>
+          CONDITION MONITORING SYSTEM · v2.0 · {new Date().getFullYear()}
+        </span>
       </div>
     </div>
   );

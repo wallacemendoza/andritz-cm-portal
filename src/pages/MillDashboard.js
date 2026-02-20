@@ -6,10 +6,10 @@ import DrawingsTab from './DrawingsTab';
 import FormsTab from './FormsTab';
 
 const tabs = [
-  { id: 'overview', label: 'Overview', icon: '◈' },
-  { id: 'work-orders', label: 'Work Orders', icon: '◉' },
-  { id: 'drawings', label: 'Route Drawings', icon: '◧' },
-  { id: 'forms', label: 'Forms', icon: '◫' }
+  { id: 'overview',    label: 'Overview',      icon: '⬡' },
+  { id: 'work-orders', label: 'Work Orders',    icon: '◉' },
+  { id: 'drawings',    label: 'Route Drawings', icon: '⊞' },
+  { id: 'forms',       label: 'Forms',          icon: '⊟' }
 ];
 
 export default function MillDashboard() {
@@ -17,223 +17,143 @@ export default function MillDashboard() {
   const navigate = useNavigate();
   const mill = MILLS[millId];
   const [activeTab, setActiveTab] = useState('overview');
-
   if (!mill) return <Navigate to="/" replace />;
 
-  const goTo = (tab) => {
-    setActiveTab(tab);
-  };
-
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-void)', display: 'flex', flexDirection: 'column' }}>
-      {/* Top bar */}
+    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column' }}>
+
+      {/* ── NAVBAR ── white background, NOT dark */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-        background: 'rgba(5, 9, 15, 0.95)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid var(--border-dim)',
+        background: '#fff',
+        borderBottom: '1px solid var(--border-light)',
+        boxShadow: '0 2px 12px rgba(0,58,112,0.07)'
       }}>
-        <div style={{
-          height: 2,
-          background: `linear-gradient(90deg, ${mill.color}, ${mill.accentColor}, transparent)`
-        }} />
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 0,
-          padding: '0 24px',
-          height: 56
-        }}>
+        {/* Thin blue gradient top stripe */}
+        <div style={{ height: 3, background: 'linear-gradient(90deg, var(--blue-dark), var(--blue), var(--blue-light))' }} />
+
+        {/* Main nav row */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '0 24px', height: 56, gap: 0 }}>
           {/* Back */}
           <button onClick={() => navigate('/')} style={{
             all: 'unset', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 8,
-            fontFamily: 'var(--font-mono)', fontSize: 10,
+            display: 'flex', alignItems: 'center', gap: 6,
+            fontFamily: 'var(--font-mono)', fontSize: 9,
             color: 'var(--text-muted)', letterSpacing: 2,
-            padding: '8px 16px 8px 0',
-            borderRight: '1px solid var(--border-dim)',
-            marginRight: 20,
-            transition: 'color 0.2s'
+            padding: '6px 16px 6px 0',
+            borderRight: '1px solid var(--border-light)',
+            marginRight: 20, transition: 'color 0.2s'
           }}
-            onMouseEnter={e => e.currentTarget.style.color = mill.color}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--blue)'}
             onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
           >
             ← FACILITIES
           </button>
 
+          {/* Logo */}
+          <img src="/andritz-logo.svg" alt="ANDRITZ" style={{ height: 22, marginRight: 20 }} />
+
+          {/* Divider */}
+          <div style={{ width: 1, height: 28, background: 'var(--border-light)', marginRight: 20 }} />
+
           {/* Mill identity */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
-            <div style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: mill.color, boxShadow: `0 0 10px ${mill.color}`,
-              animation: 'pulse-glow 2s infinite'
-            }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 7px rgba(29,185,84,0.5)', animation: 'pulse-glow 2.5s infinite' }} />
             <div>
-              <div style={{
-                fontFamily: 'var(--font-display)', fontSize: 13,
-                color: '#fff', letterSpacing: 2, lineHeight: 1.2
-              }}>
-                {mill.shortName}
-              </div>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: 9,
-                color: mill.color, letterSpacing: 2, opacity: 0.8
-              }}>
-                {mill.location}
-              </div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, color: 'var(--blue-dark)', letterSpacing: 1.5, lineHeight: 1.2 }}>{mill.shortName}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-muted)', letterSpacing: 1 }}>{mill.location}</div>
             </div>
           </div>
 
-          {/* ANDRITZ Official Logo */}
-          <img
-            src="/andritz-logo.svg"
-            alt="ANDRITZ"
-            style={{ height: 20, opacity: 0.9 }}
-          />
+          {/* Date */}
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-dim)', letterSpacing: 1 }}>
+            {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
         </div>
 
-        {/* Tab bar */}
-        <div style={{
-          display: 'flex', gap: 0, paddingLeft: 24,
-          borderTop: '1px solid var(--border-dim)'
-        }}>
+        {/* Tab row ── light blue bg */}
+        <div style={{ display: 'flex', paddingLeft: 24, background: 'var(--blue-tint)', borderTop: '1px solid var(--border-light)' }}>
           {tabs.map(tab => (
-            <button key={tab.id} onClick={() => goTo(tab.id)} style={{
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
               all: 'unset', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 20px',
-              fontFamily: 'var(--font-display)', fontSize: 10,
-              letterSpacing: 2, textTransform: 'uppercase',
-              color: activeTab === tab.id ? mill.color : 'var(--text-muted)',
-              borderBottom: `2px solid ${activeTab === tab.id ? mill.color : 'transparent'}`,
-              transition: 'all 0.2s',
-              position: 'relative'
+              display: 'flex', alignItems: 'center', gap: 7,
+              padding: '10px 22px',
+              fontFamily: 'var(--font-display)', fontSize: 9,
+              letterSpacing: 1.5, textTransform: 'uppercase',
+              color: activeTab === tab.id ? 'var(--blue)' : 'var(--text-muted)',
+              borderBottom: `2px solid ${activeTab === tab.id ? 'var(--blue)' : 'transparent'}`,
+              background: activeTab === tab.id ? '#fff' : 'transparent',
+              transition: 'all 0.2s', whiteSpace: 'nowrap'
             }}>
-              <span style={{ fontSize: 12, opacity: 0.8 }}>{tab.icon}</span>
+              <span style={{ opacity: 0.7, fontSize: 11 }}>{tab.icon}</span>
               {tab.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Content area */}
-      <div style={{ paddingTop: 110, flex: 1 }}>
-        {activeTab === 'overview' && <OverviewTab mill={mill} onNavigate={goTo} />}
+      {/* ── CONTENT ── push down for fixed navbar */}
+      <div style={{ paddingTop: 116, flex: 1 }}>
+        {activeTab === 'overview'    && <OverviewTab mill={mill} onNavigate={setActiveTab} />}
         {activeTab === 'work-orders' && <WorkOrders mill={mill} />}
-        {activeTab === 'drawings' && <DrawingsTab mill={mill} />}
-        {activeTab === 'forms' && <FormsTab mill={mill} />}
+        {activeTab === 'drawings'    && <DrawingsTab mill={mill} />}
+        {activeTab === 'forms'       && <FormsTab mill={mill} />}
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value, unit, color, icon }) {
+function StatCard({ label, value, unit, icon, color = 'var(--blue)' }) {
   return (
-    <div className="panel" style={{
-      padding: '20px 24px',
-      clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%)',
-      position: 'relative', overflow: 'hidden'
-    }}>
-      <div style={{
-        position: 'absolute', bottom: 0, right: 0,
-        fontSize: 60, opacity: 0.04, lineHeight: 1,
-        transform: 'translate(10px, 10px)'
-      }}>{icon}</div>
-      <div style={{
-        fontFamily: 'var(--font-mono)', fontSize: 9,
-        color: color || 'var(--andritz-blue)', letterSpacing: 3,
-        textTransform: 'uppercase', marginBottom: 8, opacity: 0.8
-      }}>{label}</div>
-      <div style={{
-        fontFamily: 'var(--font-display)', fontSize: 36,
-        color: color || 'var(--andritz-blue)', lineHeight: 1, marginBottom: 4
-      }}>{value}</div>
-      {unit && <div style={{
-        fontFamily: 'var(--font-mono)', fontSize: 10,
-        color: 'var(--text-muted)', letterSpacing: 2
-      }}>{unit}</div>}
+    <div className="stat-card">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>{label}</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, color, fontWeight: 700, lineHeight: 1 }}>{value}</div>
+          {unit && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-dim)', letterSpacing: 1, marginTop: 6 }}>{unit}</div>}
+        </div>
+        <div style={{ width: 42, height: 42, borderRadius: 8, background: `${color}12`, border: `1px solid ${color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19 }}>
+          {icon}
+        </div>
+      </div>
     </div>
   );
 }
 
 function OverviewTab({ mill, onNavigate }) {
   const areas = Object.entries(mill.areas);
-  const totalSubareas = areas.reduce((sum, [, a]) => sum + Object.keys(a.subareas || {}).length, 0);
+  const totalSub = areas.reduce((s, [, a]) => s + Object.keys(a.subareas || {}).length, 0);
 
   return (
-    <div style={{ padding: '40px 32px', maxWidth: 1400, margin: '0 auto' }} className="animate-fade-in">
-      {/* Header */}
-      <div style={{ marginBottom: 40 }}>
-        <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: 10,
-          letterSpacing: 4, color: mill.color,
-          marginBottom: 8, opacity: 0.8
-        }}>
-          FACILITY OVERVIEW
-        </div>
-        <h1 style={{
-          fontFamily: 'var(--font-display)', fontSize: 'clamp(24px, 4vw, 42px)',
-          color: '#fff', letterSpacing: 2, lineHeight: 1.1
-        }}>
-          {mill.name}
-        </h1>
-        <p style={{
-          fontFamily: 'var(--font-mono)', fontSize: 12,
-          color: 'var(--text-muted)', marginTop: 8, letterSpacing: 2
-        }}>
-          {mill.location} · CONDITION MONITORING ACTIVE
-        </p>
+    <div style={{ padding: '36px 32px', maxWidth: 1400, margin: '0 auto' }} className="animate-fade-in">
+
+      {/* Page title */}
+      <div style={{ marginBottom: 36 }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--blue)', letterSpacing: 3, marginBottom: 6, textTransform: 'uppercase' }}>Facility Overview</div>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 3vw, 32px)', color: 'var(--blue-dark)', letterSpacing: 1 }}>{mill.name}</h1>
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 4, letterSpacing: 1 }}>{mill.location} · Condition Monitoring Active</p>
       </div>
 
-      {/* Stats row */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: 20, marginBottom: 48
-      }}>
-        <StatCard label="Monitored Areas" value={areas.length} icon="◈" color={mill.color} />
-        <StatCard label="Sub-Areas" value={totalSubareas} icon="◉" color="var(--andritz-blue)" />
-        <StatCard label="System Status" value="LIVE" unit="All sensors online" icon="◎" color="var(--accent-green)" />
-        <StatCard label="Last Sync" value="NOW" unit={new Date().toLocaleDateString()} icon="⟳" color="var(--andritz-blue)" />
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 40 }}>
+        <StatCard label="Areas" value={areas.length} icon="⬡" color="var(--blue)" />
+        <StatCard label="Sub-Areas" value={totalSub} icon="◉" color="var(--blue-dark)" />
+        <StatCard label="Status" value="LIVE" unit="All sensors online" icon="◎" color="var(--green)" />
+        <StatCard label="Last Sync" value="NOW" unit={new Date().toLocaleDateString()} icon="⟳" color="var(--orange)" />
       </div>
 
       {/* Areas grid */}
       <div style={{ marginBottom: 40 }}>
-        <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: 10,
-          letterSpacing: 3, color: 'var(--text-muted)',
-          marginBottom: 16, textTransform: 'uppercase'
-        }}>
-          Mill Areas
+        <div className="section-header" style={{ marginBottom: 18 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--blue-dark)', letterSpacing: 1.5 }}>MILL AREAS</h2>
         </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: 16
-        }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14 }}>
           {areas.map(([key, area]) => (
-            <div key={key} style={{
-              background: 'var(--bg-card)',
-              border: `1px solid var(--border-dim)`,
-              borderRadius: 2,
-              padding: '20px',
-              clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)',
-              transition: 'border-color 0.25s'
-            }}>
-              <div style={{
-                fontFamily: 'var(--font-display)', fontSize: 14,
-                color: mill.color, marginBottom: 12, letterSpacing: 1
-              }}>
-                {area.name}
-              </div>
+            <div key={key} style={{ background: '#fff', border: '1px solid var(--border-light)', borderRadius: 8, padding: '18px 20px', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--blue)', marginBottom: 12, letterSpacing: 0.5 }}>{area.name}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {Object.values(area.subareas || {}).map(sub => (
-                  <span key={sub.name} style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 9,
-                    color: 'var(--text-muted)', letterSpacing: 1,
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid var(--border-dim)',
-                    padding: '3px 8px', borderRadius: 2
-                  }}>
-                    {sub.name}
-                  </span>
+                  <span key={sub.name} style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', background: 'var(--blue-tint)', border: '1px solid var(--border-light)', padding: '3px 9px', borderRadius: 20, letterSpacing: 0.5 }}>{sub.name}</span>
                 ))}
               </div>
             </div>
@@ -242,35 +162,12 @@ function OverviewTab({ mill, onNavigate }) {
       </div>
 
       {/* Quick actions */}
-      <div style={{
-        fontFamily: 'var(--font-mono)', fontSize: 10,
-        letterSpacing: 3, color: 'var(--text-muted)',
-        marginBottom: 16, textTransform: 'uppercase'
-      }}>
-        Quick Actions
+      <div className="section-header" style={{ marginBottom: 16 }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--blue-dark)', letterSpacing: 1.5 }}>QUICK ACTIONS</h2>
       </div>
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[
-          { label: 'New Work Order', tab: 'work-orders', color: mill.color },
-          { label: 'View Drawings', tab: 'drawings', color: 'var(--andritz-blue)' },
-          { label: 'Fill Form', tab: 'forms', color: 'var(--andritz-blue)' }
-        ].map(a => (
-          <button key={a.label} onClick={() => onNavigate(a.tab)} style={{
-            all: 'unset', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '12px 28px',
-            border: `1px solid ${a.color}`,
-            color: a.color,
-            fontFamily: 'var(--font-display)', fontSize: 11,
-            letterSpacing: 2, textTransform: 'uppercase',
-            clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)',
-            transition: 'all 0.25s'
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = a.color; e.currentTarget.style.color = 'var(--bg-void)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = a.color; }}
-          >
-            {a.label} →
-          </button>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        {[{ label: 'New Work Order', tab: 'work-orders' }, { label: 'View Drawings', tab: 'drawings' }, { label: 'Fill a Form', tab: 'forms' }].map(a => (
+          <button key={a.label} onClick={() => onNavigate(a.tab)} className="btn-primary">{a.label} →</button>
         ))}
       </div>
     </div>

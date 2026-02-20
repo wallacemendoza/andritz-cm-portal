@@ -13,7 +13,7 @@ const FORM_TYPES = [
     name: 'Condition Monitor Form',
     description: 'Record vibration analysis, diagnosis, and recommendations for equipment.',
     icon: '📊',
-    color: 'var(--andritz-blue)'
+    color: 'var(--blue)'
   },
   {
     id: 'post-maintenance',
@@ -102,8 +102,8 @@ function ConditionMonitorForm({ mill, onClose }) {
           </Field>
         </div>
       </div>
-      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-dim)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-dim)', borderRadius: 2 }}>
+      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-light)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-light)', borderRadius: 2 }}>
           CANCEL
         </button>
         <button type="submit" className="btn-cyber">GENERATE PDF →</button>
@@ -150,8 +150,8 @@ function PostMaintenanceForm({ mill, onClose }) {
         <div style={{ marginTop: 12 }}><Field label="Parts Replaced"><textarea className="input-cyber" rows={2} placeholder="List parts / components replaced..." value={data.partsReplaced} onChange={f('partsReplaced')} /></Field></div>
         <div style={{ marginTop: 12 }}><Field label="Result & Notes"><textarea className="input-cyber" rows={2} placeholder="Outcome and additional notes..." value={data.notes} onChange={f('notes')} /></Field></div>
       </div>
-      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-dim)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-dim)', borderRadius: 2 }}>CANCEL</button>
+      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-light)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-light)', borderRadius: 2 }}>CANCEL</button>
         <button type="submit" className="btn-cyber btn-cyber-orange">GENERATE PDF →</button>
       </div>
     </form>
@@ -202,8 +202,8 @@ function RCFAForm({ mill, onClose }) {
         <div style={{ marginBottom: 16 }}><Field label="Root Cause *"><input className="input-cyber" placeholder="Identified root cause" value={data.rootCause} onChange={f('rootCause')} required /></Field></div>
         <Field label="Corrective Actions"><textarea className="input-cyber" rows={3} placeholder="Actions to prevent recurrence..." value={data.correctiveActions} onChange={f('correctiveActions')} /></Field>
       </div>
-      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-dim)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-dim)', borderRadius: 2 }}>CANCEL</button>
+      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-light)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-light)', borderRadius: 2 }}>CANCEL</button>
         <button type="submit" className="btn-cyber" style={{ borderColor: 'var(--accent-green)', color: 'var(--accent-green)' }}>GENERATE PDF →</button>
       </div>
     </form>
@@ -261,8 +261,8 @@ function SafetyForm({ mill, onClose }) {
               all: 'unset', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '10px 14px',
-              background: data[item.key] ? 'rgba(0,255,136,0.1)' : 'var(--bg-elevated)',
-              border: `1px solid ${data[item.key] ? 'var(--accent-green)' : 'var(--border-dim)'}`,
+              background: data[item.key] ? 'rgba(0,255,136,0.1)' : 'var(--blue-tint)',
+              border: `1px solid ${data[item.key] ? 'var(--accent-green)' : 'var(--border-light)'}`,
               borderRadius: 2, transition: 'all 0.2s',
               fontFamily: 'var(--font-body)', fontSize: 14,
               color: data[item.key] ? 'var(--accent-green)' : 'var(--text-muted)'
@@ -285,8 +285,8 @@ function SafetyForm({ mill, onClose }) {
         <div style={{ marginBottom: 16 }}><Field label="Hazards Identified"><textarea className="input-cyber" rows={3} placeholder="List all identified hazards..." value={data.hazards} onChange={f('hazards')} /></Field></div>
         <Field label="Control Measures"><textarea className="input-cyber" rows={3} placeholder="How will hazards be controlled/mitigated..." value={data.controlMeasures} onChange={f('controlMeasures')} /></Field>
       </div>
-      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-dim)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-dim)', borderRadius: 2 }}>CANCEL</button>
+      <div style={{ padding: '16px 28px', borderTop: '1px solid var(--border-light)', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <button type="button" onClick={onClose} style={{ all: 'unset', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2, color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-light)', borderRadius: 2 }}>CANCEL</button>
         <button type="submit" className="btn-cyber" style={{ borderColor: 'var(--accent-yellow)', color: 'var(--accent-yellow)' }}>GENERATE PDF →</button>
       </div>
     </form>
@@ -310,7 +310,7 @@ export default function FormsTab({ mill }) {
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 4, color: mill.color, marginBottom: 6, opacity: 0.8 }}>
           DOCUMENTATION SYSTEM
         </div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: '#fff', letterSpacing: 2 }}>Forms</h2>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--text-dark)', letterSpacing: 2 }}>Forms</h2>
         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 4, letterSpacing: 1 }}>
           {mill.shortName} · Select a form to fill out. All forms auto-generate PDF on completion.
         </p>
@@ -320,8 +320,8 @@ export default function FormsTab({ mill }) {
         {FORM_TYPES.map(form => (
           <button key={form.id} onClick={() => setActiveForm(form.id)} style={{
             all: 'unset', cursor: 'pointer',
-            background: 'var(--bg-card)',
-            border: `1px solid var(--border-dim)`,
+            background: '#fff',
+            border: `1px solid var(--border-light)`,
             borderRadius: 2,
             padding: '28px',
             clipPath: 'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%)',
@@ -330,17 +330,17 @@ export default function FormsTab({ mill }) {
           }}
             onMouseEnter={e => {
               e.currentTarget.style.borderColor = form.color;
-              e.currentTarget.style.background = `linear-gradient(135deg, ${form.color}0a 0%, var(--bg-card) 100%)`;
+              e.currentTarget.style.background = `linear-gradient(135deg, ${form.color}0a 0%, #fff 100%)`;
               e.currentTarget.style.boxShadow = `0 0 30px ${form.color}20`;
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--border-dim)';
-              e.currentTarget.style.background = 'var(--bg-card)';
+              e.currentTarget.style.borderColor = 'var(--border-light)';
+              e.currentTarget.style.background = '#fff';
               e.currentTarget.style.boxShadow = 'none';
             }}
           >
             <div style={{ fontSize: 36, marginBottom: 16 }}>{form.icon}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, color: '#fff', letterSpacing: 1, marginBottom: 10 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, color: 'var(--text-dark)', letterSpacing: 1, marginBottom: 10 }}>
               {form.name}
             </div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 20 }}>
@@ -368,13 +368,13 @@ export default function FormsTab({ mill }) {
         marginTop: 48,
         padding: '20px 24px',
         background: 'rgba(0,117,190,0.04)',
-        border: '1px solid var(--border-dim)',
+        border: '1px solid var(--border-light)',
         borderRadius: 2,
         display: 'flex', alignItems: 'center', gap: 16
       }}>
         <div style={{ fontSize: 24, opacity: 0.7 }}>📄</div>
         <div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--text-secondary)', letterSpacing: 1, marginBottom: 4 }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--text-body)', letterSpacing: 1, marginBottom: 4 }}>
             Auto PDF Generation
           </div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: 1 }}>
@@ -392,7 +392,7 @@ export default function FormsTab({ mill }) {
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 3, color: FORM_TYPES.find(f => f.id === activeForm)?.color || mill.color, marginBottom: 4 }}>
                   {mill.shortName} · FORM
                 </div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: '#fff', letterSpacing: 1 }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--text-dark)', letterSpacing: 1 }}>
                   {FORM_TYPES.find(f => f.id === activeForm)?.name}
                 </h3>
               </div>

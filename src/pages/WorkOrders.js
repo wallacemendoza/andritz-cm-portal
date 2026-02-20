@@ -6,16 +6,16 @@ const STATUSES = ['open', 'in-progress', 'completed', 'on-hold'];
 const PRIORITIES = ['low', 'medium', 'high', 'critical'];
 
 const STATUS_COLORS = {
-  open: 'var(--andritz-blue)',
-  'in-progress': 'var(--accent-orange)',
-  completed: 'var(--accent-green)',
-  'on-hold': 'var(--accent-yellow)'
+  open: 'var(--blue)',
+  'in-progress': 'var(--orange)',
+  completed: 'var(--green)',
+  'on-hold': 'var(--yellow)'
 };
 const PRIORITY_COLORS = {
-  low: 'var(--accent-green)',
-  medium: 'var(--accent-yellow)',
-  high: 'var(--accent-orange)',
-  critical: 'var(--accent-red)'
+  low: 'var(--green)',
+  medium: 'var(--yellow)',
+  high: 'var(--orange)',
+  critical: 'var(--red)'
 };
 
 function genWONumber() {
@@ -86,7 +86,7 @@ export default function WorkOrders({ mill }) {
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 4, color: mill.color, marginBottom: 6, opacity: 0.8 }}>
             MAINTENANCE MANAGEMENT
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: '#fff', letterSpacing: 2 }}>Work Orders</h2>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--blue-dark)', letterSpacing: 2 }}>Work Orders</h2>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', marginTop: 4, letterSpacing: 1 }}>
             {mill.shortName} · {orders.length} total orders
           </p>
@@ -98,13 +98,13 @@ export default function WorkOrders({ mill }) {
 
       {/* Status overview */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12, marginBottom: 28 }}>
-        {[{ label: 'All', val: orders.length, key: 'all', color: 'var(--text-secondary)' },
+        {[{ label: 'All', val: orders.length, key: 'all', color: 'var(--text-body)' },
           ...STATUSES.map(s => ({ label: s.replace('-', ' '), val: counts[s] || 0, key: s, color: STATUS_COLORS[s] }))
         ].map(s => (
           <button key={s.key} onClick={() => setFilter(s.key)} style={{
             all: 'unset', cursor: 'pointer',
-            background: filter === s.key ? `${s.color}15` : 'var(--bg-card)',
-            border: `1px solid ${filter === s.key ? s.color : 'var(--border-dim)'}`,
+            background: filter === s.key ? `${s.color}15` : '#fff',
+            border: `1px solid ${filter === s.key ? s.color : 'var(--border-light)'}`,
             borderRadius: 2, padding: '14px 16px', transition: 'all 0.2s'
           }}>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: s.color }}>{s.val}</div>
@@ -192,11 +192,11 @@ export default function WorkOrders({ mill }) {
                         all: 'unset', cursor: 'pointer',
                         fontFamily: 'var(--font-mono)', fontSize: 10,
                         color: 'var(--text-muted)', letterSpacing: 1,
-                        padding: '4px 10px', border: '1px solid var(--border-dim)',
+                        padding: '4px 10px', border: '1px solid var(--border-light)',
                         borderRadius: 2, marginRight: 6, transition: 'all 0.2s'
                       }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = mill.color; e.currentTarget.style.color = mill.color; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-dim)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-light)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                       >
                         View
                       </button>
@@ -216,7 +216,7 @@ export default function WorkOrders({ mill }) {
             <div className="modal-header">
               <div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 3, color: mill.color, marginBottom: 4 }}>NEW WORK ORDER</div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: '#fff', letterSpacing: 1 }}>{mill.shortName}</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--blue-dark)', letterSpacing: 1 }}>{mill.shortName}</h3>
               </div>
               <button onClick={() => setShowModal(false)} style={{ all: 'unset', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 20 }}>✕</button>
             </div>
@@ -282,8 +282,8 @@ export default function WorkOrders({ mill }) {
                       {form.attachments.map((f, i) => (
                         <div key={i} style={{
                           fontFamily: 'var(--font-mono)', fontSize: 10,
-                          color: 'var(--text-muted)', background: 'var(--bg-elevated)',
-                          border: '1px solid var(--border-dim)', padding: '4px 10px', borderRadius: 2
+                          color: 'var(--text-muted)', background: 'var(--blue-tint)',
+                          border: '1px solid var(--border-light)', padding: '4px 10px', borderRadius: 2
                         }}>
                           📎 {f.name}
                         </div>
@@ -296,7 +296,7 @@ export default function WorkOrders({ mill }) {
                   <button type="button" onClick={() => setShowModal(false)} style={{
                     all: 'unset', cursor: 'pointer',
                     fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2,
-                    color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-dim)', borderRadius: 2
+                    color: 'var(--text-muted)', padding: '10px 20px', border: '1px solid var(--border-light)', borderRadius: 2
                   }}>
                     CANCEL
                   </button>
@@ -333,15 +333,15 @@ export default function WorkOrders({ mill }) {
                 ].map(item => (
                   <div key={item.label}>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>{item.label}</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'var(--text-primary)' }}>{item.val}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'var(--text-dark)' }}>{item.val}</div>
                   </div>
                 ))}
               </div>
               <div style={{ marginBottom: 20 }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>Reason / Description</div>
                 <div style={{
-                  fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--text-secondary)',
-                  background: 'var(--bg-elevated)', border: '1px solid var(--border-dim)',
+                  fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--text-body)',
+                  background: 'var(--blue-tint)', border: '1px solid var(--border-light)',
                   padding: '14px', borderRadius: 2, lineHeight: 1.7
                 }}>
                   {viewOrder.reason}
@@ -368,7 +368,7 @@ export default function WorkOrders({ mill }) {
                 <button onClick={() => deleteOrder(viewOrder.id)} style={{
                   all: 'unset', cursor: 'pointer',
                   fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: 2,
-                  color: 'var(--accent-red)', padding: '10px 20px',
+                  color: 'var(--red)', padding: '10px 20px',
                   border: '1px solid rgba(255,45,85,0.4)', borderRadius: 2, transition: 'all 0.2s'
                 }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,45,85,0.1)'}

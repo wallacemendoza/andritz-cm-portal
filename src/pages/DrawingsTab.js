@@ -51,7 +51,7 @@ function Pulp3FifthFloorMap() {
   return (
     <div style={{ position: 'relative', width: '100%', overflowX: 'auto' }}>
       <svg width="760" height="480" viewBox="0 0 760 480" style={{
-        background: 'var(--bg-card)', borderRadius: 2, display: 'block',
+        background: '#fff', borderRadius: 2, display: 'block',
         minWidth: 700
       }}>
         {/* Grid */}
@@ -107,8 +107,8 @@ function Pulp3FifthFloorMap() {
         {assets.map(asset => {
           const isHovered = tooltip?.id === asset.id;
           const color = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'rgba(0,117,190,0.15)' : 'rgba(255,45,85,0.2)';
-          const borderColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--andritz-blue)' : 'var(--accent-red)';
-          const textColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--andritz-blue)' : 'var(--accent-red)';
+          const borderColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--blue)' : 'var(--accent-red)';
+          const textColor = asset.isMissing ? 'var(--accent-red)' : asset.inRoute ? 'var(--blue)' : 'var(--accent-red)';
 
           return (
             <g key={asset.id} transform={`translate(${asset.x}, ${asset.y})`}
@@ -137,8 +137,8 @@ function Pulp3FifthFloorMap() {
         {/* Tooltip */}
         {tooltip && (
           <g transform={`translate(${Math.min(tooltip.x + 10, 680)}, ${Math.max(tooltip.y - 40, 10)})`}>
-            <rect x={0} y={0} width={120} height={36} rx={2} fill="var(--bg-elevated)" stroke="var(--andritz-blue)" strokeWidth={0.5} />
-            <text x={10} y={15} fill="var(--andritz-blue)" fontSize="10" fontFamily="var(--font-mono)" fontWeight="bold">
+            <rect x={0} y={0} width={120} height={36} rx={2} fill="var(--blue-tint)" stroke="var(--blue)" strokeWidth={0.5} />
+            <text x={10} y={15} fill="var(--blue)" fontSize="10" fontFamily="var(--font-mono)" fontWeight="bold">
               ID: {tooltip.id}
             </text>
             <text x={10} y={28} fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-mono)">
@@ -149,7 +149,7 @@ function Pulp3FifthFloorMap() {
 
         {/* Legend */}
         <g transform="translate(60, 440)">
-          <rect x={0} y={0} width={12} height={12} fill="rgba(0,117,190,0.15)" stroke="var(--andritz-blue)" strokeWidth={1} />
+          <rect x={0} y={0} width={12} height={12} fill="rgba(0,117,190,0.15)" stroke="var(--blue)" strokeWidth={1} />
           <text x={16} y={10} fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-mono)">In offline route</text>
           <rect x={130} y={0} width={12} height={12} fill="rgba(255,45,85,0.2)" stroke="var(--accent-red)" strokeWidth={1} />
           <text x={146} y={10} fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-mono)">Not in offline route</text>
@@ -158,10 +158,10 @@ function Pulp3FifthFloorMap() {
         </g>
 
         {/* Title */}
-        <text x="380" y="40" fill="var(--text-primary)" fontSize="16" textAnchor="middle" fontFamily="var(--font-display)" fontWeight="bold" letterSpacing="2">
+        <text x="380" y="40" fill="var(--text-dark)" fontSize="16" textAnchor="middle" fontFamily="var(--font-display)" fontWeight="bold" letterSpacing="2">
           PULP #3 — 5TH FLOOR
         </text>
-        <text x="380" y="54" fill="var(--andritz-blue)" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)" letterSpacing="3" opacity="0.7">
+        <text x="380" y="54" fill="var(--blue)" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)" letterSpacing="3" opacity="0.7">
           VIBRATION ROUTE MAP · TAKE ELEVATOR TO 5TH FLOOR
         </text>
       </svg>
@@ -225,15 +225,15 @@ export default function DrawingsTab({ mill }) {
       {/* Sidebar */}
       <div style={{
         width: 280, flexShrink: 0,
-        borderRight: '1px solid var(--border-dim)',
-        background: 'var(--bg-panel)',
+        borderRight: '1px solid var(--border-light)',
+        background: '#fff',
         overflowY: 'auto', padding: '24px 0'
       }}>
         <div style={{
           padding: '0 20px 16px',
           fontFamily: 'var(--font-mono)', fontSize: 9,
           letterSpacing: 3, color: mill.color, opacity: 0.8,
-          textTransform: 'uppercase', borderBottom: '1px solid var(--border-dim)',
+          textTransform: 'uppercase', borderBottom: '1px solid var(--border-light)',
           marginBottom: 8
         }}>
           {mill.shortName} · Route Maps
@@ -247,7 +247,7 @@ export default function DrawingsTab({ mill }) {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '10px 20px',
               fontFamily: 'var(--font-display)', fontSize: 12, letterSpacing: 1,
-              color: selected.area === area ? mill.color : 'var(--text-secondary)',
+              color: selected.area === area ? mill.color : 'var(--text-body)',
               background: selected.area === area ? `${mill.color}08` : 'transparent',
               borderLeft: selected.area === area ? `2px solid ${mill.color}` : '2px solid transparent',
               transition: 'all 0.2s'
@@ -263,7 +263,7 @@ export default function DrawingsTab({ mill }) {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '8px 28px',
                   fontFamily: 'var(--font-body)', fontSize: 14,
-                  color: selected.subarea === sub ? 'var(--andritz-blue)' : 'var(--text-muted)',
+                  color: selected.subarea === sub ? 'var(--blue)' : 'var(--text-muted)',
                   background: selected.subarea === sub ? 'rgba(0,117,190,0.05)' : 'transparent',
                   transition: 'all 0.2s'
                 }}>
@@ -278,7 +278,7 @@ export default function DrawingsTab({ mill }) {
                     fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 1,
                     color: selected.floor === floor ? '#fff' : 'var(--text-muted)',
                     background: selected.floor === floor ? 'rgba(0,117,190,0.08)' : 'transparent',
-                    borderLeft: selected.floor === floor ? '2px solid var(--andritz-blue)' : '2px solid transparent',
+                    borderLeft: selected.floor === floor ? '2px solid var(--blue)' : '2px solid transparent',
                     transition: 'all 0.2s',
                     display: 'flex', alignItems: 'center', gap: 8
                   }}>
@@ -338,20 +338,20 @@ export default function DrawingsTab({ mill }) {
             {hasDrawing ? (
               <div>
                 <div style={{
-                  fontFamily: 'var(--font-display)', fontSize: 16, color: '#fff',
+                  fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--text-dark)',
                   letterSpacing: 2, marginBottom: 20
                 }}>
                   {selected.subarea} — {selected.floor}
                 </div>
                 <div style={{
-                  background: 'var(--bg-card)',
+                  background: '#fff',
                   border: '1px solid var(--border-glow)',
                   borderRadius: 2, overflow: 'hidden',
                   clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%)'
                 }}>
                   <div style={{
                     padding: '12px 20px',
-                    borderBottom: '1px solid var(--border-dim)',
+                    borderBottom: '1px solid var(--border-light)',
                     display: 'flex', alignItems: 'center', gap: 8
                   }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-green)', boxShadow: '0 0 8px var(--accent-green)' }} />
