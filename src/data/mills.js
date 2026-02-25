@@ -12,14 +12,17 @@ export const MILLS = {
       pulp: {
         name: 'Pulp',
         subareas: {
-          'pulp-2': { name: 'Pulp 2', floors: ['Ground Floor', 'Upper Floor'] },
+          'pulp-2': { name: 'Pulp 2', floors: ['Ground Floor', '2nd Floor', 'Bleach Floor', 'Roof'] },
           'pulp-3': {
             name: 'Pulp 3',
-            floors: ['Ground Floor 1', 'Outside', 'Ground Floor 2', '5th Floor', 'Bleach Floor', '6th Floor / Roof']
+            floors: ['Ground Floor 1', 'Ground Floor 2', 'Outside', 'Mezzanine', '5th Floor', 'Bleach Floor', 'Roof']
           },
-          'chemical': { name: 'Chemical Area', floors: ['Ground Floor', 'Upper Level'] },
-          'lime-kiln': { name: 'Lime Kiln', floors: ['Ground Level', 'Platform'] },
-          'woodyard': { name: 'Woodyard', floors: ['Ground Level'] }
+          'ddw': { name: 'DDW', floors: ['Ground Floor', '2nd Floor', '3rd Floor', 'Roof'] },
+          'chemical': { name: 'Chemical Area', floors: [] },
+          'lime-kiln': { name: 'Lime Kiln', floors: [] },
+          'woodyard': { name: 'Woodyard', floors: [] },
+          '9-hd-chest': { name: '#9 HD Chest', floors: [] },
+          '11-hd-ub-towers': { name: '#11 HD & UB Towers', floors: [] }
         }
       },
       power: {
