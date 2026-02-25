@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -6,6 +7,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const { login } = useAuth();
 
   async function handleSubmit(e) {
@@ -20,6 +22,7 @@ export default function Login() {
       setLoading(true);
       await login(email, password);
       toast.success('Login successful!');
+      navigate('/');
     } catch (error) {
       console.error('Login error:', error);
       if (error.message === 'User not authorized') {
