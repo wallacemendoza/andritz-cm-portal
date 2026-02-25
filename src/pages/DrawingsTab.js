@@ -172,11 +172,14 @@ function Pulp3FifthFloorMap() {
 const AREA_TREE = {
   'clearwater-augusta': {
     Pulp: {
-      'Pulp 2': ['Ground Floor', 'Upper Floor'],
-      'Pulp 3': ['Ground Floor 1', 'Outside', 'Ground Floor 2', '5th Floor', 'Bleach Floor', '6th Floor / Roof'],
-      'Chemical Area': ['Ground Floor', 'Upper Level'],
-      'Lime Kiln': ['Ground Level', 'Platform'],
-      'Woodyard': ['Ground Level']
+      'Pulp 2': ['Ground Floor', '2nd Floor', 'Bleach Floor', 'Roof'],
+      'Pulp 3': ['Ground Floor 1', 'Ground Floor 2', 'Outside', 'Mezzanine', '5th Floor', 'Bleach Floor', 'Roof'],
+      'DDW': ['Ground Floor', '2nd Floor', '3rd Floor', 'Roof'],
+      'Chemical Area': [],
+      'Lime Kiln': [],
+      'Woodyard': [],
+      '#9 HD Chest': [],
+      '#11 HD & UB Towers': []
     },
     Power: {
       'Boiler House': ['Ground Floor', 'Mid Level', 'Top Level'],
