@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { MILLS } from '../data/mills';
 
 const mills = Object.values(MILLS);
@@ -8,7 +9,17 @@ export default function MillSelector() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const { logout, isAdmin, currentUser } = useAuth();
   useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
+
+  async function handleLogout() {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column' }}>
@@ -23,11 +34,70 @@ export default function MillSelector() {
         <div style={{ height: 3, background: 'linear-gradient(90deg, var(--blue-dark), var(--blue), var(--blue-light))' }} />
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 62, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <img src="/andritz-logo.svg" alt="ANDRITZ" style={{ height: 26 }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', animation: 'pulse-glow 2s infinite' }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: 2 }}>
-              ALL SYSTEMS OPERATIONAL
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', animation: 'pulse-glow 2s infinite' }} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: 2 }}>
+                ALL SYSTEMS OPERATIONAL
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--text-body)' }}>
+                {currentUser?.email}
+              </span>
+              {isAdmin() && (
+                <button
+                  onClick={() => navigate('/admin/users')}
+                  style={{
+                    padding: '6px 14px',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: 'var(--blue)',
+                    background: 'var(--blue-tint)',
+                    border: '1px solid rgba(0,117,190,0.2)',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'var(--blue)';
+                    e.target.style.color = '#fff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'var(--blue-tint)';
+                    e.target.style.color = 'var(--blue)';
+                  }}
+                >
+                  👤 Users
+                </button>
+              )}
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: '6px 14px',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#dc2626',
+                  background: 'transparent',
+                  border: '1px solid #dc2626',
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#dc2626';
+                  e.target.style.color = '#fff';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#dc2626';
+                }}
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </nav>
