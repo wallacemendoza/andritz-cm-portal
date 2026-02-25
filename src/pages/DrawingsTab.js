@@ -182,11 +182,35 @@ const AREA_TREE = {
       '#11 HD & UB Towers': []
     },
     Power: {
-      'Boiler House': ['Ground Floor', 'Mid Level', 'Top Level'],
-      'Turbine Hall': ['Ground Floor']
+      'Power House': ['Ground Floor', '2nd Floor', '3rd Floor', 'Roof'],
+      'Recovery Boiler #3': ['Basement', 'Ground Floor', 'Outside', '3rd Floor', '4th Floor', '5th Floor', '8th Floor'],
+      'Evaps 1 & 2': [],
+      'Evaps 3': [],
+      'Water & Waste': []
     },
-    PM1: { 'Wet End': ['Ground Floor', 'Mezzanine'], 'Dry End': ['Ground Floor', 'Mezzanine'] },
-    PM3: { 'Wet End': ['Ground Floor', 'Mezzanine'], 'Dry End': ['Ground Floor', 'Mezzanine'] }
+    PM3: {
+      'Wet End': ['Wet End - TS', 'Wet End - DS'],
+      'Dryers': ['Dryers - TS', 'Dryers - DS'],
+      'Coaters': ['Coaters - TS', 'Coaters - DS', 'Winder'],
+      'Machine Floor': [],
+      'Basement': ['Wet End South', 'Wet End West', 'Wet End East', 'Dryers East South', 'East Outside', 'Dryers East North', 'Dryers West North', 'Winder', 'Calendar Pit'],
+      'Vacuum Pumps': [],
+      'Stock Prep': ['East Stock Prep', 'Central Stock Prep', 'West Stock Prep'],
+      'DC Motors': [],
+      'Fans': []
+    },
+    PM1: {
+      'Wet End': ['Wet End - TS', 'Wet End - DS'],
+      'Dryers': ['Dryers - TS', 'Dryers - DS'],
+      'Coaters': ['Coaters - TS', 'Coaters - DS', 'Winder'],
+      'Machine Floor': [],
+      'Basement': [],
+      'Vacuum Pumps': [],
+      'Differentials': [],
+      'Line Shaft': [],
+      'VFD Motors': [],
+      'Fans': []
+    }
   },
   'gpi-macon': {
     PM1: {
@@ -194,7 +218,15 @@ const AREA_TREE = {
       Basement: ['Ground'],
       'Drive Side': ['Floor 1', 'Floor 2']
     },
-    Utilities: {
+    PM2: {
+      'Air Compressors': ['Ground Floor'],
+      'Water Treatment': ['Ground Floor']
+    },
+    Fiber: {
+      'Air Compressors': ['Ground Floor'],
+      'Water Treatment': ['Ground Floor']
+    },
+    Power: {
       'Air Compressors': ['Ground Floor'],
       'Water Treatment': ['Ground Floor']
     }
