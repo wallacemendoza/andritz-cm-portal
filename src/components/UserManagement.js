@@ -11,10 +11,6 @@ export default function UserManagement() {
   const [addingUser, setAddingUser] = useState(false);
   const { getAllUsers, createUser, deleteUser, updateUserRole, isAdmin, currentUser } = useAuth();
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
   async function loadUsers() {
     try {
       setLoading(true);
@@ -27,6 +23,11 @@ export default function UserManagement() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleAddUser(e) {
     e.preventDefault();
