@@ -281,8 +281,6 @@ export default function Pulp2GroundFloorMap({ onAssetClick }) {
 
             const bw = isBase ? 64 : 52;
             const bh = 22;
-            const bx = asset.x - bw / 2;
-            const by = asset.y - bh / 2;
 
             return (
               <g
