@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Pulp2GroundFloorMap from '../components/maps/Pulp2GroundFloorMap';
 
 // Pulp 3 - 5th Floor SVG map based on the uploaded PDF
 function Pulp3FifthFloorMap() {
@@ -245,7 +246,8 @@ const AREA_TREE = {
 };
 
 const HAS_DRAWING = {
-  'clearwater-augusta-Pulp-Pulp 3-5th Floor': true
+  'clearwater-augusta-Pulp-Pulp 3-5th Floor': true,
+  'clearwater-augusta-Pulp-Pulp 2-Ground Floor': true
 };
 
 export default function DrawingsTab({ mill }) {
@@ -395,7 +397,10 @@ export default function DrawingsTab({ mill }) {
                     </span>
                   </div>
                   <div style={{ padding: '20px', overflowX: 'auto' }}>
-                    <Pulp3FifthFloorMap />
+                    {drawingKey === 'clearwater-augusta-Pulp-Pulp 3-5th Floor' && <Pulp3FifthFloorMap />}
+                    {drawingKey === 'clearwater-augusta-Pulp-Pulp 2-Ground Floor' && (
+                      <Pulp2GroundFloorMap onAssetClick={(asset) => console.log('Asset clicked:', asset)} />
+                    )}
                   </div>
                 </div>
               </div>
