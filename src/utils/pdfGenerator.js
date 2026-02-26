@@ -178,82 +178,220 @@ export function generateConditionMonitorPDF(data, millName) {
   bg(doc);
   header(doc, 'Condition Monitoring Report', 'Vibration Diagnosis and Recommendation', millName);
 
-  // Body region
-  let y = CY + 10;
+  // ── Local design helpers ───────────────────────────────────────────────────
 
-  // Top row: Date, WO, Technician
-  const colW = (CW - 8) / 3;
-  keyValRow(doc, CX, y, colW, 'Date', data.date || '');
-  keyValRow(doc, CX + colW + 4, y, colW, 'Work Order', data.woNumber || '');
-  keyValRow(doc, CX + (colW + 4) * 2, y, colW, 'Technician', data.technicianName || '');
-  y += 14;
+  // Solid left-accent bar on any box (techy side stripe)
+  const accentBar = (x, y, h, color = [0, 140, 210]) => {
+    doc.setFillColor(...color);
+    doc.rect(x, y, 2, h, 'F');
+  };
 
-  // Asset info
-  keyValRow(doc, CX, y, CW, 'Asset Name', data.assetName || '', { labelW: 35 });
-  y += 12;
+  // Dark header strip for a section box
+  const sectionStrip = (x, y, w, h = 8) => {
+    rr(doc, x, y, w, h, 3, [15, 45, 90], null);
+    accentBar(x, y, h);
+  };
 
-  keyValRow(doc, CX, y, (CW - 4) / 2, 'Asset ID', data.assetId || '', { labelW: 28 });
-  keyValRow(doc, CX + (CW + 4) / 2, y, (CW - 4) / 2, 'Location', data.area || '', { labelW: 30 });
-  y += 14;
+  // Techy key-value field (label tab + value area)
+  const kvField = (x, y, w, label, value, labelW = 32, h = 10) => {
+    rr(doc, x, y, w, h, 2, [247, 250, 253], [180, 205, 230]);
+    rr(doc, x, y, labelW, h, 2, [220, 238, 248], [180, 205, 230]);
+    doc.setDrawColor(180, 205, 230);
+    doc.setLineWidth(0.3);
+    doc.line(x + labelW, y, x + labelW, y + h);
+    tx(doc, 7, 'bold', [0, 90, 180], label.toUpperCase(), x + 3, y + h / 2 + 2.2);
+    tx(doc, 8.5, 'normal', [20, 35, 60], value, x + labelW + 3, y + h / 2 + 2.2);
+  };
 
-  // Status + levels row
-  const half = (CW - 4) / 2;
-  rr(doc, CX, y, half, 22, 4, WHITE, BORDER_LT);
-  rr(doc, CX + half + 4, y, half, 22, 4, WHITE, BORDER_LT);
+  // Metric tile: dark header + value body
+  const metricTile = (x, y, w, label, value, valueFontSize = 13, valueColor, bodyBg) => {
+    const TILE_H = 22;
+    const HDR_H = 8;
+    rr(doc, x, y, w, TILE_H, 3, bodyBg || [247, 250, 253], [180, 205, 230]);
+    sectionStrip(x, y, w, HDR_H);
+    tx(doc, 6.5, 'bold', [255, 255, 255], label.toUpperCase(), x + 5, y + 5.8);
+    tx(doc, valueFontSize, 'bold', valueColor || [20, 35, 60], String(value || '—'),
+      x + w / 2, y + HDR_H + (TILE_H - HDR_H) / 2 + valueFontSize * 0.18, { align: 'center' });
+  };
 
-  tx(doc, 8, 'bold', BLUE, 'Status Condition', CX + 4, y + 7);
-  statusPill(doc, CX + 4, y + 10, data.statusCondition || 'Alert');
+  // Status pill (colored badge)
+  const techyPill = (x, y, label) => {
+    const s = String(label || '').toLowerCase();
+    const bg =
+      s.includes('accept') || s.includes('ok') || s.includes('good') ? [40, 165, 90] :
+      s.includes('caut') || s.includes('warn')                        ? [210, 140, 30] :
+                                                                          [220, 50, 50];
+    const tw = Math.max(doc.getStringUnitWidth(label) * 9 / doc.internal.scaleFactor + 10, 28);
+    rr(doc, x, y - 5.5, tw, 8, 4, bg, null);
+    tx(doc, 8, 'bold', [255, 255, 255], label, x + tw / 2, y, { align: 'center' });
+    return tw;
+  };
 
-  tx(doc, 8, 'bold', BLUE, 'Vibration Level (G)', CX + half + 8, y + 7);
-  const vibBg = (String(data.statusCondition || '').toLowerCase().includes('accept') ? OK_BG :
-    String(data.statusCondition || '').toLowerCase().includes('caut') ? WARN_BG : ALERT_BG);
-  rr(doc, CX + half + 8, y + 10, half - 12, 9, 4, vibBg, BORDER_MID);
-  tx(doc, 10, 'bold', DARK_TEXT, data.vibrationLevel || '', CX + half + 8 + (half - 12) / 2, y + 16.3, { align: 'center' });
-  y += 28;
+  // Techy image box with dark background + bracket corners
+  const techyImageBox = (x, y, w, h, label, imgData) => {
+    const HDR = 8;
+    // dark backing + border
+    rr(doc, x, y, w, h, 3, [10, 24, 48], [100, 140, 185]);
+    // header
+    sectionStrip(x, y, w, HDR);
+    tx(doc, 6.5, 'bold', [0, 140, 210], label.toUpperCase(), x + 5, y + 5.5);
 
-  // Diagnosis row
-  keyValRow(doc, CX, y, CW, 'Vibration Diagnosis', data.diagnosis || '', { labelW: 45 });
-  y += 14;
+    // Corner bracket corners (decorative)
+    const s = 4;
+    doc.setDrawColor(0, 140, 210);
+    doc.setLineWidth(0.55);
+    const bx = x + 2, by = y + HDR + 1.5, bw = w - 4, bh = h - HDR - 3;
+    doc.line(bx, by + s, bx, by);        doc.line(bx, by, bx + s, by);         // TL
+    doc.line(bx + bw - s, by, bx + bw, by); doc.line(bx + bw, by, bx + bw, by + s); // TR
+    doc.line(bx, by + bh - s, bx, by + bh); doc.line(bx, by + bh, bx + s, by + bh); // BL
+    doc.line(bx + bw - s, by + bh, bx + bw, by + bh); doc.line(bx + bw, by + bh - s, bx + bw, by + bh); // BR
 
-  // Evidence images section
-  tx(doc, 11, 'bold', DARK_BLUE, 'Evidence', CX, y);
-  y += 6;
-
-  const imgW = (CW - 8) / 3;
-  const imgH = 38;
-
-  function imageBox(ix, label, imgData) {
-    const x = CX + ix * (imgW + 4);
-    rr(doc, x, y, imgW, imgH, 4, WHITE, BORDER_LT);
-    rr(doc, x, y, imgW, 9, 4, ROW_BG, BORDER_LT);
-    tx(doc, 7.5, 'bold', MUTED, label, x + 3, y + 6.3);
+    // Subtle grid lines in placeholder area
+    doc.setDrawColor(30, 60, 90);
+    doc.setLineWidth(0.12);
+    for (let gx = bx + 8; gx < bx + bw - 2; gx += 10)
+      doc.line(gx, by + 2, gx, by + bh - 2);
+    for (let gy = by + 8; gy < by + bh - 2; gy += 8)
+      doc.line(bx + 2, gy, bx + bw - 2, gy);
 
     if (imgData) {
       try {
-        doc.addImage(imgData, 'JPEG', x + 3, y + 11, imgW - 6, imgH - 14, undefined, 'FAST');
-      } catch (e) {
+        doc.addImage(imgData, 'JPEG', bx + 1, by + 1, bw - 2, bh - 2, undefined, 'FAST');
+      } catch {
         try {
-          doc.addImage(imgData, 'PNG', x + 3, y + 11, imgW - 6, imgH - 14, undefined, 'FAST');
-        } catch (e2) {
-          tx(doc, 8, 'normal', MUTED, 'Invalid image', x + imgW / 2, y + imgH / 2, { align: 'center' });
+          doc.addImage(imgData, 'PNG', bx + 1, by + 1, bw - 2, bh - 2, undefined, 'FAST');
+        } catch {
+          tx(doc, 7.5, 'italic', [60, 90, 120], 'Invalid image', x + w / 2, y + h / 2, { align: 'center' });
         }
       }
     } else {
-      tx(doc, 8, 'normal', MUTED, 'No attachment', x + imgW / 2, y + imgH / 2, { align: 'center' });
+      tx(doc, 7.5, 'italic', [60, 90, 120], 'No attachment', x + w / 2, y + h / 2, { align: 'center' });
     }
-  }
+  };
 
-  imageBox(0, 'Trend Chart', data.trendImage);
-  imageBox(1, 'Spectrum', data.spectrumImage);
-  imageBox(2, 'Machine Photo', data.machineImage);
+  // Rich text box (dark header bar + white body)
+  const richBox = (x, y, w, h, title, body, headerBg = [15, 45, 90]) => {
+    // Drop shadow effect
+    rr(doc, x + 0.6, y + 0.6, w, h, 4, [210, 222, 235], null);
+    // Main box
+    rr(doc, x, y, w, h, 4, [255, 255, 255], [180, 205, 230]);
+    // Header
+    sectionStrip(x, y, w, 9, headerBg);
+    rr(doc, x, y, w, 9, 3, headerBg, null);
+    accentBar(x, y, 9);
+    tx(doc, 8.5, 'bold', [255, 255, 255], title.toUpperCase(), x + 6, y + 6.5);
+    // Body text
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(20, 35, 60);
+    const lines = doc.splitTextToSize(String(body || ''), w - 9);
+    doc.text(lines, x + 5, y + 15);
+  };
 
-  y += imgH + 10;
+  // ── Section label helper (vertical side tab) ──────────────────────────────
+  const sideTab = (y, h, label) => {
+    rr(doc, 2, y, 8, h, 2, [15, 45, 90], null);
+    doc.setFontSize(5.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 140, 210);
+    doc.text(label.toUpperCase(), 6.5, y + h / 2 + 1, { angle: 90, align: 'center' });
+  };
 
-  // Recommendations boxes
-  multilineBox(doc, CX, y, CW, 45, 'Description', data.observations || '');
-  y += 50;
-  multilineBox(doc, CX, y, CW, 55, 'Recommendation', data.recommendation || '', { titleBg: ALERT_BG });
-  y += 60;
+  // ── Section divider ───────────────────────────────────────────────────────
+  const sectionHeading = (y, label) => {
+    tx(doc, 7, 'bold', [0, 140, 210], `◆  ${label.toUpperCase()}`, CX + 2, y + 4);
+    doc.setDrawColor(180, 205, 230);
+    doc.setLineWidth(0.25);
+    doc.line(CX + doc.getStringUnitWidth(`◆  ${label.toUpperCase()}`) * 7 / doc.internal.scaleFactor + 6,
+      y + 1.5, CX + CW, y + 1.5);
+  };
+
+  // ── Layout ────────────────────────────────────────────────────────────────
+  let y = CY + 6;
+
+  // ── SECTION 1: General Information ──────────────────────────────────────
+  sideTab(y, 78, 'General Info');
+  sectionHeading(y, 'General Information');
+  y += 9;
+
+  // Row 1: Date | Work Order | Technician
+  const col3 = (CW - 6) / 3;
+  kvField(CX,                  y, col3, 'Date',       data.date || '—');
+  kvField(CX + col3 + 3,       y, col3, 'Work Order', data.woNumber || '—', 30);
+  kvField(CX + (col3 + 3) * 2, y, col3, 'Technician', data.technicianName || '—', 30);
+  y += 13;
+
+  // Row 2: Asset Name (full width)
+  kvField(CX, y, CW, 'Asset Name', data.assetName || '—', 30);
+  y += 13;
+
+  // Row 3: Asset ID | Location
+  const col2 = (CW - 4) / 2;
+  kvField(CX,           y, col2, 'Asset ID', data.assetId || '—', 26);
+  kvField(CX + col2 + 4, y, col2, 'Location', data.area || '—',   26);
+  y += 13;
+
+  // Row 4: Status | Vibration | Temperature — metric tiles
+  const col3b = (CW - 6) / 3;
+
+  // Status tile
+  rr(doc, CX, y, col3b, 22, 3, [247, 250, 253], [180, 205, 230]);
+  sectionStrip(CX, y, col3b, 8);
+  rr(doc, CX, y, col3b, 8, 3, [15, 45, 90], null);
+  accentBar(CX, y, 8);
+  tx(doc, 6.5, 'bold', [255, 255, 255], 'STATUS CONDITION', CX + 5, y + 5.8);
+  techyPill(CX + 4, y + 18, data.statusCondition || 'Alert');
+
+  // Vibration tile
+  const vib = String(data.statusCondition || '').toLowerCase();
+  const vibBodyBg =
+    vib.includes('accept') || vib.includes('ok')   ? [235, 255, 245] :
+    vib.includes('caut')   || vib.includes('warn')  ? [255, 248, 230] :
+                                                       [255, 240, 240];
+  const vibValColor =
+    vib.includes('accept') || vib.includes('ok')   ? [40, 165, 90]  :
+    vib.includes('caut')   || vib.includes('warn')  ? [210, 140, 30] :
+                                                       [200, 40, 40];
+  metricTile(CX + col3b + 3, y, col3b, 'Vibration Level (G)',
+    data.vibrationLevel || '—', 13, vibValColor, vibBodyBg);
+
+  // Temperature tile
+  metricTile(CX + (col3b + 3) * 2, y, col3b, 'Temperature (°F)',
+    data.temperature ? `${data.temperature} °F` : '—', 11, [15, 45, 90]);
+  y += 26;
+
+  // Diagnosis row
+  kvField(CX, y, CW, 'Vibration Diagnosis', data.diagnosis || '—', 44);
+  y += 15;
+
+  // ── SECTION 2: Vibration Evidence ────────────────────────────────────────
+  sideTab(y, 58, 'Evidence');
+  sectionHeading(y, 'Vibration Evidence');
+  y += 9;
+
+  const imgW = (CW - 6) / 3;
+  const imgH = 42;
+  techyImageBox(CX,               y, imgW, imgH, 'Trend · Inboard Envelope', data.trendImage);
+  techyImageBox(CX + imgW + 3,    y, imgW, imgH, 'Spectrum · Freq. Analysis', data.spectrumImage);
+  techyImageBox(CX + (imgW + 3)*2, y, imgW, imgH, 'Photo · Machine Condition', data.machineImage);
+  y += imgH + 12;
+
+  // ── SECTION 3: Diagnosis & Recommendation ────────────────────────────────
+  sideTab(y, 76, 'Diagnosis & Rec.');
+  sectionHeading(y, 'Diagnosis & Recommendation');
+  y += 9;
+
+  richBox(doc, CX, y, CW, 28, 'Description', data.observations || '', [15, 45, 90]);
+  y += 32;
+
+  richBox(doc, CX, y, CW, 34, 'Recommendation', data.recommendation || '', [158, 26, 26]);
+  y += 38;
+
+  // CMR reference badge (bottom-right)
+  const cmrLabel = `CMR: ${id}`;
+  const cmrW = doc.getStringUnitWidth(cmrLabel) * 8 / doc.internal.scaleFactor + 12;
+  rr(doc, CX + CW - cmrW, y, cmrW, 8, 2, [15, 45, 90], null);
+  tx(doc, 7, 'bold', [0, 140, 210], cmrLabel, CX + CW - cmrW + 4, y + 5.5);
 
   pageFooter(doc, id);
   doc.save(`${id}_Condition_Monitor.pdf`);
