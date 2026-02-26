@@ -155,21 +155,6 @@ function multilineBox(doc, x, y, w, h, titleText, bodyText, {
   doc.text(wrapped, x + 4, y + 16);
 }
 
-function statusPill(doc, x, y, label) {
-  const s = String(label || '').toUpperCase();
-  const map = {
-    acceptable: { bg: OK_BG, border: DK_GREEN, text: DK_GREEN },
-    caution: { bg: WARN_BG, border: [184, 134, 11], text: [184, 134, 11] },
-    alert: { bg: ALERT_BG, border: RED, text: RED }
-  };
-  const k = s.includes('ACCEPT') ? 'acceptable' : s.includes('CAUT') ? 'caution' : 'alert';
-  const style = map[k];
-  rr(doc, x, y, 30, 9, 5, style.bg, style.border, 0.6);
-  tx(doc, 7.5, 'bold', style.text, style.bg === OK_BG ? 'ACCEPTABLE' : style.bg === WARN_BG ? 'CAUTION' : 'ALERT', x + 15, y + 6.3, {
-    align: 'center'
-  });
-}
-
 // ─── Report 1: Condition Monitoring Report ────────────────────────────────────
 export function generateConditionMonitorPDF(data, millName) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
