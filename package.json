@@ -20,7 +20,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy:commit": "node -e \"const cp=require('child_process'); const ts=new Date().toISOString(); cp.execSync('git commit --allow-empty -m \\\"chore: trigger deploy '+ts+'\\\"',{stdio:'inherit'});\"",
+    "deploy:trigger": "npm run deploy:commit && git pull --rebase origin main && git push origin main"
   },
   "eslintConfig": {
     "extends": ["react-app"]
