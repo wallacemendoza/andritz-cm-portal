@@ -171,8 +171,8 @@ export function generateConditionMonitorPDF(data, millName) {
   };
 
   // Dark header strip for a section box
-  const sectionStrip = (x, y, w, h = 8) => {
-    rr(doc, x, y, w, h, 3, [15, 45, 90], null);
+  const sectionStrip = (x, y, w, h = 8, color) => {
+    rr(doc, x, y, w, h, 3, color || [15, 45, 90], null);
     accentBar(x, y, h);
   };
 
