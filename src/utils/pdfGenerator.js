@@ -9,7 +9,6 @@ const BRAND_LOGO_PNG =
 // ─── ANDRITZ Brand Colors ──────────────────────────────────────────────────────
 const BLUE = [0, 117, 191];
 const DARK_BLUE = [0, 58, 112];
-const RED = [228, 0, 43];
 const GREEN_LEAF = [76, 175, 80];
 const DK_GREEN = [46, 125, 50];
 const WHITE = [255, 255, 255];
