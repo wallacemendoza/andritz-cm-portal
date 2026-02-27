@@ -233,8 +233,8 @@ function ConditionMonitorForm({ mill, onClose }) {
       toast.success(`PDF generated: ${id}`);
       onClose();
     } catch (err) {
-      console.error(err);
-      toast.error('PDF generation failed');
+      console.error('PDF generation error:', err);
+      toast.error(`PDF generation failed: ${err.message || 'Unknown error'}`);
     }
   };
 
