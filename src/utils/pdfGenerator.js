@@ -43,7 +43,10 @@ function rr(doc, x, y, w, h, r = 3, fill = null, stroke = null, lw = 0.4) {
   if (fill) doc.setFillColor(...fill);
   if (stroke) doc.setDrawColor(...stroke);
   doc.setLineWidth(lw);
-  doc.roundedRect(x, y, w, h, r, r, fill ? 'FD' : 'S');
+  // jsPDF roundedRect signature: (x, y, w, h, rx, ry, style)
+  // style: 'S' = stroke, 'F' = fill, 'FD' or 'DF' = fill and stroke
+  const style = fill && stroke ? 'FD' : fill ? 'F' : 'S';
+  doc.roundedRect(x, y, w, h, r, r, style);
 }
 function dot(doc, x, y, r = 1.2, fill = BLUE) {
   doc.setFillColor(...fill);
