@@ -19,6 +19,11 @@ export default function MillDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   if (!mill) return <Navigate to="/" replace />;
 
+  // Add Heatmap tab only for Clearwater mill
+  const displayTabs = millId === 'clearwater-augusta' 
+    ? [...tabs, { id: 'heatmap', label: 'Heatmap', icon: '🔥' }]
+    : tabs;
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column' }}>
 
@@ -73,7 +78,7 @@ export default function MillDashboard() {
 
         {/* Tab row ── light blue bg */}
         <div style={{ display: 'flex', paddingLeft: 24, background: 'var(--blue-tint)', borderTop: '1px solid var(--border-light)' }}>
-          {tabs.map(tab => (
+          {displayTabs.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
               all: 'unset', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 7,
@@ -98,6 +103,7 @@ export default function MillDashboard() {
         {activeTab === 'work-orders' && <WorkOrders mill={mill} />}
         {activeTab === 'drawings'    && <DrawingsTab mill={mill} />}
         {activeTab === 'forms'       && <FormsTab mill={mill} />}
+        {activeTab === 'heatmap'     && <HeatmapTab mill={mill} />}
       </div>
     </div>
   );
@@ -116,6 +122,23 @@ function StatCard({ label, value, unit, icon, color = 'var(--blue)' }) {
           {icon}
         </div>
       </div>
+    </div>
+  );
+}
+
+function HeatmapTab() {
+  return (
+    <div style={{ width: '100%', height: 'calc(100vh - 116px)', background: 'var(--bg-page)' }}>
+      <iframe
+        src="/clearwater_vibration_dashboard.html"
+        style={{
+          width: '100%',
+          height: '100%',
+          border: 'none',
+          display: 'block',
+        }}
+        title="Vibration Heatmap Dashboard"
+      />
     </div>
   );
 }

@@ -192,7 +192,7 @@ export function generateConditionMonitorPDF(data, millName) {
     const TILE_H = 22;
     const HDR_H = 8;
     rr(doc, x, y, w, TILE_H, 3, bodyBg || [247, 250, 253], [180, 205, 230]);
-    sectionStrip(x, y, w, HDR_H);
+    sectionStrip(x, y, w, HDR_H, [15, 45, 90]);
     tx(doc, 6.5, 'bold', [255, 255, 255], label.toUpperCase(), x + 5, y + 5.8);
     tx(doc, valueFontSize, 'bold', valueColor || [20, 35, 60], String(value || '—'),
       x + w / 2, y + HDR_H + (TILE_H - HDR_H) / 2 + valueFontSize * 0.18, { align: 'center' });
@@ -217,7 +217,7 @@ export function generateConditionMonitorPDF(data, millName) {
     // dark backing + border
     rr(doc, x, y, w, h, 3, [10, 24, 48], [100, 140, 185]);
     // header
-    sectionStrip(x, y, w, HDR);
+    sectionStrip(x, y, w, HDR, [15, 45, 90]);
     tx(doc, 6.5, 'bold', [0, 140, 210], label.toUpperCase(), x + 5, y + 5.5);
 
     // Corner bracket corners (decorative)
