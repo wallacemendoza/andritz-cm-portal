@@ -17,7 +17,6 @@ const BODY_TEXT = [70, 85, 105];
 const MUTED = [120, 135, 150];
 const BORDER_LT = [210, 225, 235];
 const BORDER_MID = [185, 205, 220];
-const ROW_BG = [238, 246, 252];
 const WARN_BG = [255, 248, 225];
 const ALERT_BG = [253, 236, 234];
 const OK_BG = [232, 245, 233];
