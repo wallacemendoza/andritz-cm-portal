@@ -40,12 +40,20 @@ function tx(doc, size, weight, color, text, x, y, opts = {}) {
   doc.text(String(text ?? ''), x, y, opts);
 }
 function rr(doc, x, y, w, h, r = 3, fill = null, stroke = null, lw = 0.4) {
+  // Set colors before drawing
   if (fill) doc.setFillColor(...fill);
   if (stroke) doc.setDrawColor(...stroke);
-  doc.setLineWidth(lw);
-  // jsPDF roundedRect signature: (x, y, w, h, rx, ry, style)
-  // style: 'S' = stroke, 'F' = fill, 'FD' or 'DF' = fill and stroke
-  const style = fill && stroke ? 'FD' : fill ? 'F' : 'S';
+  if (lw) doc.setLineWidth(lw);
+  
+  // Determine the style based on what's provided
+  let style = 'S'; // default to stroke only
+  if (fill && stroke) {
+    style = 'FD'; // fill and draw (stroke)
+  } else if (fill && !stroke) {
+    style = 'F'; // fill only
+  }
+  
+  // Call roundedRect with proper parameters
   doc.roundedRect(x, y, w, h, r, r, style);
 }
 function dot(doc, x, y, r = 1.2, fill = BLUE) {
